@@ -487,7 +487,7 @@ void DynamicObject::UpdateHitboxes() {
 
 	glDispatchCompute(hitboxes.size()+1, 1, 1);
 
-	glMemoryBarrier(GL_ALL_BARRIER_BITS);
+	glMemoryBarrier(GL_BUFFER_UPDATE_BARRIER_BIT);
 
 	memcpy(hitboxOutVertices, shaderManager->GetHitboxComputeOutBuferPtr(), hitboxVerticesCount * sizeof(float));
 

@@ -14,6 +14,7 @@ void ResourcesManager::Init() {
 
 	LoadModel<BasicCharacter>("MODELS/TEST_1_4.mgr", "MODEL2");
 	AutoList<BasicCharacter>::GetObj(1)->StartAnimation("WAVING", Animation::NORMAL);
+	AutoList<BasicCharacter>::GetObj(1)->SetPosition(glm::vec3(0.0f, 0.0f, 25.0f));
 
 	Character* map=LoadModel<Character>("MODELS/MAP_1.mgr","MAP");
 	map->Scale(10.0f, 10.0f, 10.0f);
@@ -30,12 +31,13 @@ void ResourcesManager::Clear() {
 
 template <class T>
 T* ResourcesManager::LoadModel(const char* filename,const char* objectName) {
-	Shader *modelStatic, *modelDynamic, *hitboxStatic, *hitboxDynamic, *hitboxCompute;
+	Shader *modelStatic, *modelDynamic, *hitboxStatic, *hitboxDynamic, *hitboxComputeDynamic, *hitboxComputeStatic;
 	modelStatic = AutoMap<Shader>::GetObj("StaticObj");
 	modelDynamic = AutoMap<Shader>::GetObj("DynamicObj");
 	hitboxStatic = AutoMap<Shader>::GetObj("StaticHitbox");
 	hitboxDynamic = AutoMap<Shader>::GetObj("DynamicHitbox");
-	hitboxCompute = AutoMap<Shader>::GetObj("HitboxCompute");
+	hitboxComputeDynamic = AutoMap<Shader>::GetObj("DynamicHitboxCompute");
+	hitboxComputeStatic = AutoMap<Shader>::GetObj("StaticHitboxCompute");
 
 	//if (AutoList<Character>::GetCount() > 0)
 	//	AutoList<Character>::DestoryObj(0);
@@ -58,10 +60,12 @@ T* ResourcesManager::LoadModel(const char* filename,const char* objectName) {
 			if (character->IsObjectDynamic(i)) {
 				character->LoadObjectShaderProgram(i, modelDynamic);
 				character->LoadObjectHitboxShaderProgram(i, hitboxDynamic);
+				character->LoadHitboxComputeShaderProgram(hitboxComputeDynamic);
 			}
 			else {
 				character->LoadObjectShaderProgram(i, modelStatic);
 				character->LoadObjectHitboxShaderProgram(i, hitboxStatic);
+				character->LoadHitboxComputeShaderProgram(hitboxComputeStatic);
 			}
 			if (strcmp(filename + (filenameStr.size() - 4), ".mgr") == 0) {
 				character->GetModel()->GetObject_(i)->AddMainHitbox(ImportFile::GetMainHitbox(i));
@@ -75,7 +79,7 @@ T* ResourcesManager::LoadModel(const char* filename,const char* objectName) {
 				character->GetModel()->GetObject_(i)->LoadHitboxBufferData();
 			}
 		}
-		character->LoadHitboxComputeShaderProgram(hitboxCompute);
+		//character->LoadHitboxComputeShaderProgram(hitboxCompute);
 		character->Init();
 
 		character->SetProjectionMatrix(WinAPIwindowManager::GetMainWindow()->GetProjectionMatrix());

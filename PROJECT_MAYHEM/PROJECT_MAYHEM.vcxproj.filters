@@ -178,9 +178,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="SHADERS\hitboxComputeShader.comp">
-      <Filter>Pliki zasobów\SHADERS</Filter>
-    </None>
     <None Include="SHADERS\shader1_Dynamic.frag">
       <Filter>Pliki zasobów\SHADERS</Filter>
     </None>
@@ -215,6 +212,12 @@
       <Filter>Pliki zasobów\SHADERS</Filter>
     </None>
     <None Include="SHADERS\groundShader.vert">
+      <Filter>Pliki zasobów\SHADERS</Filter>
+    </None>
+    <None Include="SHADERS\hitboxComputeShader_Dynamic.comp">
+      <Filter>Pliki zasobów\SHADERS</Filter>
+    </None>
+    <None Include="SHADERS\hitboxComputeShader_Static.comp">
       <Filter>Pliki zasobów\SHADERS</Filter>
     </None>
   </ItemGroup>

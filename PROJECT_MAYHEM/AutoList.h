@@ -24,10 +24,12 @@ public:
 		else return false;
 	}
 	static void ClearAll() {
-		for (T* obj : objects)
+		T* obj;
+		while (objects.size() > 0) {
+			obj = objects.back();
+			objects.pop_back();
 			delete obj;
-
-		objects.clear();
+		}
 	}
 
 	virtual ~AutoList() {

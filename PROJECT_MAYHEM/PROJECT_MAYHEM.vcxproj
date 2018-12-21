@@ -188,7 +188,8 @@
     <None Include="SHADERS\axisShader.vert" />
     <None Include="SHADERS\groundShader.frag" />
     <None Include="SHADERS\groundShader.vert" />
-    <None Include="SHADERS\hitboxComputeShader.comp" />
+    <None Include="SHADERS\hitboxComputeShader_Dynamic.comp" />
+    <None Include="SHADERS\hitboxComputeShader_Static.comp" />
     <None Include="SHADERS\shader1_Dynamic.frag" />
     <None Include="SHADERS\shader1_Dynamic.vert" />
     <None Include="SHADERS\shader1_Static.frag" />

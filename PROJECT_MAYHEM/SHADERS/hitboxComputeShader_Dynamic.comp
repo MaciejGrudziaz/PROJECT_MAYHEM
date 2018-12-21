@@ -1,5 +1,4 @@
 #version 460 core
-#define jointsCount 29
 
 layout(local_size_x=8) in;
 
@@ -35,10 +34,12 @@ void main(){
 	//vec4 pos=vec4(inPos[gl_GlobalInvocationID.x].pos,1.0f);
 	float idx=inPos[gl_GlobalInvocationID.x].idx;
 
-	vec4 prevPos,nextPos;
-	prevPos=prevJoints[int(idx)]*pos;
-	nextPos=nextJoints[int(idx)]*pos;
-	pos=prevPos+interpolation*(nextPos-prevPos);
+	if(int(idx) >= 0){
+		vec4 prevPos,nextPos;
+		prevPos=prevJoints[int(idx)]*pos;
+		nextPos=nextJoints[int(idx)]*pos;
+		pos=prevPos+interpolation*(nextPos-prevPos);
+	}
 
 	pos=model*pos;
 
@@ -46,9 +47,4 @@ void main(){
 	outPos[gl_GlobalInvocationID.x].y=pos.y;
 	outPos[gl_GlobalInvocationID.x].z=pos.z;
 	outPos[gl_GlobalInvocationID.x].idx=idx;
-
-	outPos[gl_GlobalInvocationID.x].x+=5.0f;
-	outPos[gl_GlobalInvocationID.x].y+=3.33f;
-	outPos[gl_GlobalInvocationID.x].z+=1.27f;
-	outPos[gl_GlobalInvocationID.x].idx+=13.4f;
 }

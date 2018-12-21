@@ -139,5 +139,6 @@ void Graphics::InitShaders() {
 	new Shader("StaticObj", "SHADERS/shader1_Static.vert", "SHADERS/shader1_Static.frag");
 	new Shader("DynamicHitbox", "SHADERS/shader2_Dynamic.vert", "SHADERS/shader2_Dynamic.frag");
 	new Shader("StaticHitbox", "SHADERS/shader2_Static.vert", "SHADERS/shader2_Static.frag");
-	new Shader("HitboxCompute", "SHADERS/hitboxComputeShader.comp");
+	new Shader("DynamicHitboxCompute", "SHADERS/hitboxComputeShader_Dynamic.comp");
+	new Shader("StaticHitboxCompute", "SHADERS/hitboxComputeShader_Static.comp");
 }
