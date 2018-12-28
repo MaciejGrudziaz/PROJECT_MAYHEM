@@ -21,7 +21,6 @@ uniform mat4 model;
 
 void main(){
 	vec4 pos=vec4(inPos[gl_GlobalInvocationID.x].x,inPos[gl_GlobalInvocationID.x].y,inPos[gl_GlobalInvocationID.x].z,1.0f);
-	//vec4 pos=vec4(inPos[gl_GlobalInvocationID.x].pos,1.0f);
 
 	pos=model*pos;
 

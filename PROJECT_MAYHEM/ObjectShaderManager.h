@@ -125,7 +125,7 @@ public:
 	virtual void Init() = 0;
 
 	virtual ~ObjectShaderManager() {
-		glUnmapNamedBuffer(hitboxComputeOutBuffer);
+		//glUnmapNamedBuffer(hitboxComputeOutBuffer);
 
 		glDeleteVertexArrays(1, &VAO);
 		glDeleteVertexArrays(1, &hitboxVAO);
