@@ -2,7 +2,9 @@
 #include "ImportFile.h"
 #include "WinAPIwindowManager.h"
 //#include "Character.h"
-#include "BasicCharacter.h"
+//#include "BasicCharacter.h"
+#include "Player.h"
+#include "Map.h"
 //#include "Camera.h"
 #include "FollowCamera.h"
 

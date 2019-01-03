@@ -46,6 +46,9 @@ protected:
 	typedef std::map<int, Hitbox*> HitboxMap;
 	HitboxMap hitboxes;
 	Hitbox* mainHitbox;
+	bool showAllHitboxes;
+	bool showHitbox;
+	int showHitboxIdx;
 
 	void WriteErrorToFile(std::string message);
 
@@ -133,6 +136,11 @@ public:
 	void SetModelMatrix(glm::mat4 model_) { model = model_; }
 	void SetViewMatrix(glm::mat4 view_) { view = view_; }
 	void SetProjectionMatrix(glm::mat4 projection_) { projection = projection_; }
+
+	void ShowAllHitboxes() { showAllHitboxes = true; showHitbox = false; }
+	bool ShowHitbox(int idx);
+	void ShowMainHitbox() { showHitbox = true; showAllHitboxes = false; showHitboxIdx = -1; }
+	void HideHitboxes() { showAllHitboxes = false; showHitbox = false; }
 
 	virtual void Init() = 0;
 	virtual void Update() = 0;

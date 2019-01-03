@@ -1,7 +1,8 @@
 #include "ResourcesManager.h"
 
 void ResourcesManager::Init() {
-	BasicCharacter* soldier=LoadModel<BasicCharacter>("MODELS/TEST_1_4.mgr","MODEL1");
+	//BasicCharacter* soldier=LoadModel<BasicCharacter>("MODELS/TEST_1_4.mgr","MODEL1");
+	Player* soldier = LoadModel<Player>("MODELS/TEST_1_4.mgr", "MODEL1");
 
 	//glm::vec3 pos = AutoList<BasicCharacter>::GetObj(0)->GetPosition();
 	//pos.z -= 10.0f;
@@ -16,7 +17,7 @@ void ResourcesManager::Init() {
 	AutoList<BasicCharacter>::GetObj(1)->StartAnimation("WAVING", Animation::NORMAL);
 	AutoList<BasicCharacter>::GetObj(1)->SetPosition(glm::vec3(0.0f, 0.0f, 25.0f));
 
-	Character* map=LoadModel<Character>("MODELS/MAP_1.mgr","MAP");
+	Map* map=LoadModel<Map>("MODELS/MAP_1.mgr","MAP");
 	map->Scale(10.0f, 10.0f, 10.0f);
 }
 

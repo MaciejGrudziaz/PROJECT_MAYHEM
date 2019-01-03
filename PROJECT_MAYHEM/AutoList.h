@@ -31,6 +31,18 @@ public:
 			delete obj;
 		}
 	}
+	static bool ChangePos(int idx1, int idx2) {
+		if(idx1>=0 && idx1<objects.size())
+			if(idx2>=0 && idx2<objects.size())
+				if (idx1 != idx2) {
+					T* tmp = objects[idx1];
+					objects[idx1] = objects[idx2];
+					objects[idx2] = tmp;
+					return true;
+				}
+		
+		return false;
+	}
 
 	virtual ~AutoList() {
 		T* thisObj = static_cast<T*>(this);

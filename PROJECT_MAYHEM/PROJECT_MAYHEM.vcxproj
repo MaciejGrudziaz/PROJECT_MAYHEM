@@ -146,12 +146,14 @@
     <ClInclude Include="ImportFile.h" />
     <ClInclude Include="InputFunctions.h" />
     <ClInclude Include="InputModule.h" />
+    <ClInclude Include="Map.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModulesManager.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectShaderManager.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="PacketManager.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="ResourcesManager.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="BasicCharacter.h" />
@@ -171,6 +173,7 @@
     <ClCompile Include="Hitbox.cpp" />
     <ClCompile Include="ImportFile.cpp" />
     <ClCompile Include="InputModule.cpp" />
+    <ClCompile Include="Map.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModulesManager.cpp" />
     <ClCompile Include="Object.cpp" />

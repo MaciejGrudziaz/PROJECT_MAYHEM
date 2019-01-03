@@ -1,7 +1,7 @@
 #pragma once
 #include "DIRECTINPUT.h"
 #include "InputFunctions.h"
-#include "Character.h"
+#include "Player.h"
 
 class InputModule {
 	static PacketManager outPackets;

@@ -113,7 +113,7 @@ public:
 
 	virtual void Update();
 
-	void Draw() { model.Draw(); }
+	virtual void Draw() { model.Draw(); }
 
 	Model* GetModel() { return &model; }
 

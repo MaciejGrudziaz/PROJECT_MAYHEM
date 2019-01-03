@@ -1,6 +1,8 @@
 #pragma once
 #include <stb_image.h>
 #include "Shader.h"
+#include <string>
+#include <map>
 
 class ObjectShaderManager {
 protected:
@@ -120,7 +122,6 @@ public:
 	virtual void* GetJointsNextMatBufferPtr() { return jointsNextMatBufferPtr; }
 	//virtual unsigned GetHitboxComputeInBuffer() { return hitboxComputeInBuffer; }
 	//virtual unsigned GetHitboxComputeOutBuffer() { return hitboxComputeOutBuffer; }
-
 
 	virtual void Init() = 0;
 

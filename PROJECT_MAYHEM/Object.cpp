@@ -4,7 +4,8 @@
 //-----------------------------------Object------------------------------------
 //-----------------------------------------------------------------------------
 
-Object::Object() :vertices(nullptr), hitboxVertices(nullptr), basicObject(nullptr), objectBufferVertexAttribCount(13),hitboxObjectBufferVertexAttribCount(4)
+Object::Object() :vertices(nullptr), hitboxVertices(nullptr), basicObject(nullptr), objectBufferVertexAttribCount(13), hitboxObjectBufferVertexAttribCount(4),
+showAllHitboxes(false), showHitbox(false), showHitboxIdx(-1)
 { }
 
 void Object::LoadHitboxDataFromShaders() {
@@ -269,6 +270,16 @@ int Object::Animation_SetName(int index, const char* name) {
 	else return -1;
 }
 
+bool Object::ShowHitbox(int idx) {
+	if (idx >= 0 && idx < hitboxes.size()) {
+		showHitbox = true;
+		showAllHitboxes = false;
+		showHitboxIdx = idx;
+		return true;
+	}
+	return false;
+}
+
 //-----------------------------------------------------------------------------
 //-------------------------------Object::Private-------------------------------
 //-----------------------------------------------------------------------------
@@ -420,22 +431,30 @@ void DynamicObject::Draw() {
 
 	glDrawArrays(GL_TRIANGLES, 0, verticesCount / objectBufferVertexAttribCount);
 
-	glUseProgram(hitboxShaderProgram);
 
-	glUniform1f(hitboxInterpolationLoc, animationManager->GetInterpolationVal());
-	glUniformMatrix4fv(hitboxModelLoc, 1, GL_FALSE, glm::value_ptr(model));
+	if (showAllHitboxes || showHitbox) {
+		glUseProgram(hitboxShaderProgram);
 
-	glBindVertexArray(hitboxVAO);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, prevMatBuffer);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, nextMatBuffer);
+		glUniform1f(hitboxInterpolationLoc, animationManager->GetInterpolationVal());
+		glUniformMatrix4fv(hitboxModelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-	glDrawElementsBaseVertex(GL_LINES, 24, GL_UNSIGNED_INT, 0, 0);
+		glBindVertexArray(hitboxVAO);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, prevMatBuffer);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, nextMatBuffer);
 
-	int i = 1;
-	for (HitboxMap::iterator it = hitboxes.begin(); it != hitboxes.end(); ++it) {
-		int startVal = 8 * i;
-		glDrawElementsBaseVertex(GL_LINES, 24, GL_UNSIGNED_INT, 0, startVal);
-		++i;
+		if (showAllHitboxes) {
+			glDrawElementsBaseVertex(GL_LINES, 24, GL_UNSIGNED_INT, 0, 0);
+
+			int i = 1, startVal;
+			for (HitboxMap::iterator it = hitboxes.begin(); it != hitboxes.end(); ++it) {
+				startVal = 8 * i;
+				glDrawElementsBaseVertex(GL_LINES, 24, GL_UNSIGNED_INT, 0, startVal);
+				++i;
+			}
+		}
+		else {
+			glDrawElementsBaseVertex(GL_LINES, 24, GL_UNSIGNED_INT, 0, 8 * (showHitboxIdx + 1));
+		}
 	}
 }
 
@@ -566,16 +585,23 @@ void StaticObject::Draw() {
 	glBindVertexArray(shaderManager->GetVAO());
 	glDrawArrays(GL_TRIANGLES, 0, verticesCount / objectBufferVertexAttribCount);
 
-	glUseProgram(shaderManager->GetHitboxShader()->GetProgram());
-	glUniformMatrix4fv(shaderManager->GetModelHitboxLoc(), 1, GL_FALSE, glm::value_ptr(model));
-	glBindVertexArray(shaderManager->GetHitboxVAO());
-	glDrawElementsBaseVertex(GL_LINES, 24, GL_UNSIGNED_INT, 0, 0);
+	if (showAllHitboxes || showHitbox) {
+		glUseProgram(shaderManager->GetHitboxShader()->GetProgram());
+		glUniformMatrix4fv(shaderManager->GetModelHitboxLoc(), 1, GL_FALSE, glm::value_ptr(model));
+		glBindVertexArray(shaderManager->GetHitboxVAO());
 
-	int i = 1;
-	for (HitboxMap::iterator it = hitboxes.begin(); it != hitboxes.end(); ++it) {
-		int startVal = 8 * i;
-		glDrawElementsBaseVertex(GL_LINES, 24, GL_UNSIGNED_INT, 0, startVal);
-		++i;
+		if (showAllHitboxes) {
+			glDrawElementsBaseVertex(GL_LINES, 24, GL_UNSIGNED_INT, 0, 0);
+
+			int i = 1, startVal;
+			for (HitboxMap::iterator it = hitboxes.begin(); it != hitboxes.end(); ++it) {
+				startVal = 8 * i;
+				glDrawElementsBaseVertex(GL_LINES, 24, GL_UNSIGNED_INT, 0, startVal);
+				++i;
+			}
+		} else {
+			glDrawElementsBaseVertex(GL_LINES, 24, GL_UNSIGNED_INT, 0, 8 * (showHitboxIdx + 1));
+		}
 	}
 }
 

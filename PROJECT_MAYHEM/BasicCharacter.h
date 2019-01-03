@@ -15,7 +15,7 @@ public:
 
 	BasicCharacter(const char* name) :Character(name) {}
 
-	void Init();
+	virtual void Init();
 
-	void Update();
+	virtual void Update();
 };

@@ -33,7 +33,8 @@ void InputModule::Process() {
 		}
 	}
 
-	SendPackets(AutoList<Character>::GetObj(0)->GetInputPacketManager());
+	if (AutoList<Player>::GetCount() > 0)
+		SendPackets(AutoList<Player>::GetObj(0)->GetInputPacketManager());
 }
 
 void InputModule::End() {
