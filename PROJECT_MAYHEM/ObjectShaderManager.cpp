@@ -1,9 +1,9 @@
 #include "ObjectShaderManager.h"
 
-ObjectShaderManager::ObjectShaderManager():shaderProgram(nullptr),hitboxShaderProgram(nullptr),hitboxComputeShaderProgram(nullptr),modelLoc(-1),viewLoc(-1),projectionLoc(-1),modelHitboxLoc(-1),viewHitboxLoc(-1),
+ObjectShaderManager::ObjectShaderManager():shaderProgram(nullptr),hitboxShaderProgram(nullptr),modelLoc(-1),viewLoc(-1),projectionLoc(-1),modelHitboxLoc(-1),viewHitboxLoc(-1),
 projectionHitboxLoc(-1),modelHitboxComputeLoc(-1),VBO(0xFFFFFFFF),VAO(0xFFFFFFFF),texture(0xFFFFFFFF),hitboxVAO(0xFFFFFFFF),hitboxVBO(0xFFFFFFFF),hitboxIndicesBuffer(0xFFFFFFFF),
-hitboxComputeOutBuffer(0xFFFFFFFF),hitboxComputeInBuffer(0xFFFFFFFF),textureAvailableLoc(-1),jointsPrevMatricesBuffer(0xFFFFFFFF),jointsNextMatricesBuffer(0xFFFFFFFF),interpolationLoc(-1),
-hitboxInterpolationLoc(-1),hitboxComputeInterpoaltionLoc(-1),jointsPrevMatBufferPtr(nullptr),jointsNextMatBufferPtr(nullptr){ }
+textureAvailableLoc(-1),jointsPrevMatricesBuffer(0xFFFFFFFF),jointsNextMatricesBuffer(0xFFFFFFFF),interpolationLoc(-1),
+hitboxInterpolationLoc(-1),jointsPrevMatBufferPtr(nullptr),jointsNextMatBufferPtr(nullptr){ }
 
 int ObjectShaderManager::LoadMainShaderProgram(Shader* shaderProgram_) {
 	if (shaderProgram_ != nullptr) {
@@ -19,37 +19,6 @@ int ObjectShaderManager::LoadHitboxVisualizationShaderProgram(Shader* shaderProg
 		return 1;
 	}
 	else return 0;
-}
-
-int ObjectShaderManager::LoadHitboxComputeShaderProgram(Shader* shaderProgram_) {
-	if (shaderProgram_ != nullptr) {
-		hitboxComputeShaderProgram = shaderProgram_;
-		return 1;
-	}
-	else return 0;
-}
-
-void ObjectShaderManager::SetHitboxComputeBuffers(float* verticesBuffer_, int verticesCount_) {
-	glUseProgram(hitboxComputeShaderProgram->GetProgram());
-
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, hitboxComputeInBuffer);
-	//glBufferData(GL_SHADER_STORAGE_BUFFER, verticesCount_ * sizeof(float), verticesBuffer_, GL_STATIC_DRAW);
-	//glBufferStorage(GL_SHADER_STORAGE_BUFFER, verticesCount_ * sizeof(float), verticesBuffer_, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
-	glBufferStorage(GL_SHADER_STORAGE_BUFFER, verticesCount_ * sizeof(float), verticesBuffer_, GL_MAP_WRITE_BIT);
-
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, hitboxComputeOutBuffer);
-	//glBufferData(GL_SHADER_STORAGE_BUFFER, verticesCount_ * sizeof(float), NULL, GL_DYNAMIC_COPY);
-	//glBufferStorage(GL_SHADER_STORAGE_BUFFER, verticesCount_ * sizeof(float), NULL, GL_MAP_READ_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
-	glBufferStorage(GL_SHADER_STORAGE_BUFFER, verticesCount_ * sizeof(float), NULL, GL_MAP_READ_BIT);
-
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, hitboxComputeInBuffer);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, hitboxComputeOutBuffer);
-
-	//hitboxComputeOutBufferPtr = glMapNamedBufferRange(hitboxComputeOutBuffer, 0,verticesCount_*sizeof(float),GL_MAP_READ_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
-
-	GLenum err;
-	err = glGetError();
-	assert(err == GL_NO_ERROR);
 }
 
 void ObjectShaderManager::LoadTexture(const char* filename) {
@@ -100,8 +69,6 @@ void ObjectShaderManager::GenerateBuffersAndArrays() {
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &hitboxVBO);
 	glGenBuffers(1, &hitboxIndicesBuffer);
-	glGenBuffers(1, &hitboxComputeInBuffer);
-	glGenBuffers(1, &hitboxComputeOutBuffer);
 
 	GLenum err;
 	err = glGetError();
@@ -192,18 +159,6 @@ void ObjectShaderManager::LoadHitboxProjectionMatrixLoc() {
 	assert(err == GL_NO_ERROR);
 }
 
-void ObjectShaderManager::LoadHitboxComputeModelMatrixLoc() {
-	modelHitboxComputeLoc = glGetUniformLocation(hitboxComputeShaderProgram->GetProgram(), "model");
-	if (modelHitboxComputeLoc < 0) {
-		WriteErrorToFile("Hitbox compute model transform matrix location not found!");
-		throw std::exception();
-	}
-
-	GLenum err;
-	err = glGetError();
-	assert(err == GL_NO_ERROR);
-}
-
 //void ObjectShaderManager::LoadJointsPreviousMatricesLoc() {
 //	jointsPrevMatricesLoc = glGetUniformLocation(shaderProgram->GetProgram(), "prevJoints");
 //	if (jointsPrevMatricesLoc < 0) {
@@ -276,18 +231,6 @@ void ObjectShaderManager::LoadHitboxInterpolationLoc() {
 //	}
 //}
 
-void ObjectShaderManager::LoadHitboxComputeInterpolationLoc() {
-	hitboxComputeInterpoaltionLoc = glGetUniformLocation(hitboxComputeShaderProgram->GetProgram(), "interpolation");
-	if (interpolationLoc < 0) {
-		WriteErrorToFile("Hitbox compute interpolation value location not found!");
-		throw std::exception();
-	}
-
-	GLenum err;
-	err = glGetError();
-	assert(err == GL_NO_ERROR);
-}
-
 void ObjectShaderManager::WriteErrorToFile(const char* message) {
 	std::fstream file("LOGS/ObjectShaderManager_ERRORLOG.txt", std::ios::out | std::ios::app);
 	assert(file.is_open());
@@ -352,13 +295,9 @@ void DynamicObjectShaderManager::Init() {
 	LoadHitboxViewMatrixLoc();
 	LoadHitboxProjectionMatrixLoc();
 
-	LoadHitboxComputeModelMatrixLoc();
-
 	LoadInterpolationLoc();
 
 	LoadHitboxInterpolationLoc();
-
-	LoadHitboxComputeInterpolationLoc();
 }
 
 //-----------------------------------------------------------------------------
@@ -446,6 +385,4 @@ void StaticObjectShaderManager::Init() {
 	LoadHitboxModelMatrixLoc();
 	LoadHitboxViewMatrixLoc();
 	LoadHitboxProjectionMatrixLoc();
-
-	LoadHitboxComputeModelMatrixLoc();
 }

@@ -11,7 +11,7 @@ protected:
 	//-------------------------------------------------------------------------
 	Shader* shaderProgram;
 	Shader* hitboxShaderProgram;
-	Shader* hitboxComputeShaderProgram;
+	//Shader* hitboxComputeShaderProgram;
 
 	int modelLoc;
 	int viewLoc;
@@ -34,9 +34,9 @@ protected:
 	unsigned hitboxVAO;
 	unsigned hitboxIndicesBuffer;
 
-	unsigned hitboxComputeOutBuffer;
-	unsigned hitboxComputeInBuffer;
-	void* hitboxComputeOutBufferPtr;
+	//unsigned hitboxComputeOutBuffer;
+	//unsigned hitboxComputeInBuffer;
+	//void* hitboxComputeOutBufferPtr;
 
 	int textureAvailableLoc;
 
@@ -50,7 +50,7 @@ protected:
 
 	int interpolationLoc;
 	int hitboxInterpolationLoc;
-	int hitboxComputeInterpoaltionLoc;
+	//int hitboxComputeInterpoaltionLoc;
 
 	//-------------------------------------------------------------------------
 	//----------------------------PRIVATE FUNCTIONS----------------------------
@@ -66,11 +66,11 @@ protected:
 	virtual void LoadHitboxViewMatrixLoc();
 	virtual void LoadHitboxProjectionMatrixLoc();
 
-	virtual void LoadHitboxComputeModelMatrixLoc();
+	//virtual void LoadHitboxComputeModelMatrixLoc();
 
 	virtual void LoadInterpolationLoc();
 	virtual void LoadHitboxInterpolationLoc();
-	virtual void LoadHitboxComputeInterpolationLoc();
+	//virtual void LoadHitboxComputeInterpolationLoc();
 
 	void WriteErrorToFile(const char* message);
 
@@ -79,14 +79,14 @@ public:
 
 	int LoadMainShaderProgram(Shader* shaderProgram_);
 	int LoadHitboxVisualizationShaderProgram(Shader* shaderProgram_);
-	int LoadHitboxComputeShaderProgram(Shader* shaderProgram_);
+	//int LoadHitboxComputeShaderProgram(Shader* shaderProgram_);
 
 	void SetObjectBufferVertexAttribCount(int vertexAttribCount_) { objectBufferVertexAttribCount = vertexAttribCount_; }
 	void SetHitboxObjectBufferVertexAttribCount(int vertexAttribCount_) { hitboxObjectBufferVertexAttribCount = vertexAttribCount_; }
 
 	virtual void SetVAO(float* verticesBuffer, int verticesCount) = 0;
 	virtual void SetHitboxVAO(float* verticesBuffer, unsigned* indicesBuffer, int verticesCount) = 0;
-	virtual void SetHitboxComputeBuffers(float* verticesBuffer_, int verticesCount_);
+	//virtual void SetHitboxComputeBuffers(float* verticesBuffer_, int verticesCount_);
 
 	virtual void SetJointsBuffers(int jointsCount) = 0;
 
@@ -94,7 +94,7 @@ public:
 
 	const Shader* GetMainShader() const { return shaderProgram; }
 	const Shader* GetHitboxShader()const { return hitboxShaderProgram; }
-	const Shader* GetHitboxComputeShader()const { return hitboxComputeShaderProgram; }
+	//const Shader* GetHitboxComputeShader()const { return hitboxComputeShaderProgram; }
 
 	virtual int GetModelLoc()const { return modelLoc; }
 	virtual int GetViewLoc()const { return viewLoc; }
@@ -109,15 +109,15 @@ public:
 	virtual unsigned GetHitboxVBO()const { return hitboxVAO; }
 	virtual unsigned GetHitboxVAO()const { return hitboxVAO; }
 	virtual unsigned GetHitboxIndicesBuffer()const { return hitboxIndicesBuffer; }
-	virtual unsigned GetHitboxComputeOutBuffer()const { return hitboxComputeOutBuffer; }
-	virtual unsigned GetHitboxComputeInBuffer()const { return hitboxComputeInBuffer; }
-	virtual void* GetHitboxComputeOutBuferPtr()const { return hitboxComputeOutBufferPtr; }
+	//virtual unsigned GetHitboxComputeOutBuffer()const { return hitboxComputeOutBuffer; }
+	//virtual unsigned GetHitboxComputeInBuffer()const { return hitboxComputeInBuffer; }
+	//virtual void* GetHitboxComputeOutBuferPtr()const { return hitboxComputeOutBufferPtr; }
 	virtual int GetTextureAvailableLoc()const { return textureAvailableLoc; }
 	virtual unsigned GetJointsPrevMatricesBuffer()const { return jointsPrevMatricesBuffer; }
 	virtual unsigned GetJointsNextMatricesBuffer()const { return jointsNextMatricesBuffer; }
 	virtual int GetInterpolationLoc()const { return interpolationLoc; }
 	virtual int GetHitboxInterpolationLoc()const { return hitboxInterpolationLoc; }
-	virtual int GetHitboxComputeInterpolationLoc()const { return hitboxComputeInterpoaltionLoc; }
+	//virtual int GetHitboxComputeInterpolationLoc()const { return hitboxComputeInterpoaltionLoc; }
 	virtual void* GetJointsPrevMatBufferPtr() { return jointsPrevMatBufferPtr; }
 	virtual void* GetJointsNextMatBufferPtr() { return jointsNextMatBufferPtr; }
 	//virtual unsigned GetHitboxComputeInBuffer() { return hitboxComputeInBuffer; }
@@ -134,8 +134,8 @@ public:
 		glDeleteBuffers(1, &VBO);
 		glDeleteBuffers(1, &hitboxVBO);
 		glDeleteBuffers(1, &hitboxIndicesBuffer);
-		glDeleteBuffers(1, &hitboxComputeInBuffer);
-		glDeleteBuffers(1, &hitboxComputeOutBuffer);
+		//glDeleteBuffers(1, &hitboxComputeInBuffer);
+		//glDeleteBuffers(1, &hitboxComputeOutBuffer);
 	}
 };
 
@@ -173,16 +173,16 @@ class StaticObjectShaderManager :public ObjectShaderManager {
 	int GetJointsHitboxPrevMatricesLoc()const { return -1; }
 	int GetJointsHitboxNextMatricesLoc()const { return -1; }
 	int GetHitboxInterpolationLoc()const { return -1; }
-	int GetJointsHitboxComputePrevMatricesLoc()const { return -1; }
-	int GetJointsHitboxComputeNextMatricesLoc()const { return -1; }
-	int GetHitboxComputeInterpolationLoc()const { return -1; }
+	//int GetJointsHitboxComputePrevMatricesLoc()const { return -1; }
+	//int GetJointsHitboxComputeNextMatricesLoc()const { return -1; }
+	//int GetHitboxComputeInterpolationLoc()const { return -1; }
 
 	void* GetJointsPrevMatBufferPtr(int jointIdx) { return nullptr; }
 	void* GetJointsNextMatBufferPtr(int jointIdx) { return nullptr; }
 	void* GetJointsHitboxPrevMatBufferPtr(int jointIdx) { return nullptr; }
 	void* GetJointsHitboxNextMatBufferPtr(int jointIdx) { return nullptr; }
-	void* GetJointsHitboxComputePrevMatBufferPtr(int jointIdx) { return nullptr; }
-	void* GetJointsHitboxComputeNextMatBufferPtr(int jointIdx) { return nullptr; }
+	//void* GetJointsHitboxComputePrevMatBufferPtr(int jointIdx) { return nullptr; }
+	//void* GetJointsHitboxComputeNextMatBufferPtr(int jointIdx) { return nullptr; }
 
 public:
 

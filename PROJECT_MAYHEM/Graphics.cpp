@@ -6,16 +6,11 @@ BasicShaderStruct Graphics::axis;
 void Graphics::Init() {
 	WinAPIwindowManager::RegisterWindow(new WinAPIwindow("MAIN", 1280, 720));
 
-	GLenum err;
-	err = glGetError();
-
 	VSync(0);
 
 	//Camera* camera = new Camera(glm::vec3(0.0f, 7.5f, 20.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	InitShaders();
-
-	err = glGetError();
 
 	//new Shader("Ground", "SHADERS/groundShader.vert", "SHADERS/groundShader.frag");
 	//new Shader("Axis", "SHADERS/axisShader.vert", "SHADERS/axisShader.frag");
@@ -26,8 +21,6 @@ void Graphics::Init() {
 	//new Shader("HitboxCompute", "SHADERS/hitboxComputeShader.comp");
 
 	LoadBasicShaderStructs();
-
-	err = glGetError();
 
 	//LoadModel_GL("MODELS/TEST.mgr");
 	//AutoList<Character>::GetObj(0)->StartAnimation(0);
@@ -140,22 +133,10 @@ bool Graphics::VSync(int on_off) {
 }
 
 void Graphics::InitShaders() {
-	GLenum err;
-	err = glGetError();
 	new Shader("Ground", "SHADERS/groundShader.vert", "SHADERS/groundShader.frag");
-	err = glGetError();
 	new Shader("Axis", "SHADERS/axisShader.vert", "SHADERS/axisShader.frag");
-	err = glGetError();
 	new Shader("DynamicObj", "SHADERS/shader1_Dynamic.vert", "SHADERS/shader1_Dynamic.frag");
-	err = glGetError();
 	new Shader("StaticObj", "SHADERS/shader1_Static.vert", "SHADERS/shader1_Static.frag");
-	err = glGetError();
 	new Shader("DynamicHitbox", "SHADERS/shader2_Dynamic.vert", "SHADERS/shader2_Dynamic.frag");
-	err = glGetError();
 	new Shader("StaticHitbox", "SHADERS/shader2_Static.vert", "SHADERS/shader2_Static.frag");
-	err = glGetError();
-	new Shader("DynamicHitboxCompute", "SHADERS/hitboxComputeShader_Dynamic.comp");
-	err = glGetError();
-	new Shader("StaticHitboxCompute", "SHADERS/hitboxComputeShader_Static.comp");
-	err = glGetError();
 }

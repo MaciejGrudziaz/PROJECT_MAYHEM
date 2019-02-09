@@ -52,8 +52,6 @@ public:
 	void LoadHitboxShaderProgramToAll(Shader* hitboxShaderProgram_);
 	void LoadObjectHitboxShaderProgram(int index, Shader* sahderProgram);
 
-	void LoadHitboxComputeShaderProgram(Shader* shaderProgram);
-
 	void StartAnimation(int index, int direction);
 	void StartAnimation(int index, int startFrame, int stopFrame, int direction);
 	void StartAnimation(int index, int startFrame, int stopFrame, int iterations, int direction);

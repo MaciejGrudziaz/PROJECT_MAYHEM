@@ -26,12 +26,6 @@ void Character::LoadObjectHitboxShaderProgram(int index, Shader* shaderProgram) 
 	}
 }
 
-void Character::LoadHitboxComputeShaderProgram(Shader* shaderProgram) {
-	for (unsigned i = 0; i < model.GetObjectsCount(); ++i) {
-		model.GetObject_(i)->LoadHitboxComputeShader(shaderProgram);
-	}
-}
-
 void Character::StartAnimation(int index, int direction) {
 	for (int i = 0; i < model.GetObjectsCount(); ++i)
 		model.GetObject_(i)->StartAnimation(index,direction);

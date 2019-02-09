@@ -39,8 +39,6 @@ T* ResourcesManager::LoadModel(const char* filename,const char* objectName) {
 	modelDynamic = AutoMap<Shader>::GetObj("DynamicObj");
 	hitboxStatic = AutoMap<Shader>::GetObj("StaticHitbox");
 	hitboxDynamic = AutoMap<Shader>::GetObj("DynamicHitbox");
-	hitboxComputeDynamic = AutoMap<Shader>::GetObj("DynamicHitboxCompute");
-	hitboxComputeStatic = AutoMap<Shader>::GetObj("StaticHitboxCompute");
 
 	//if (AutoList<Character>::GetCount() > 0)
 	//	AutoList<Character>::DestoryObj(0);
@@ -64,12 +62,10 @@ T* ResourcesManager::LoadModel(const char* filename,const char* objectName) {
 			if (character->IsObjectDynamic(i)) {
 				character->LoadObjectShaderProgram(i, modelDynamic);
 				character->LoadObjectHitboxShaderProgram(i, hitboxDynamic);
-				character->LoadHitboxComputeShaderProgram(hitboxComputeDynamic);
 			}
 			else {
 				character->LoadObjectShaderProgram(i, modelStatic);
 				character->LoadObjectHitboxShaderProgram(i, hitboxStatic);
-				character->LoadHitboxComputeShaderProgram(hitboxComputeStatic);
 			}
 			if (strcmp(filename + (filenameStr.size() - 4), ".mgr") == 0) {
 				character->GetModel()->GetObject_(i)->AddMainHitbox(ImportFile::GetMainHitbox(i));
@@ -83,7 +79,6 @@ T* ResourcesManager::LoadModel(const char* filename,const char* objectName) {
 				character->GetModel()->GetObject_(i)->LoadHitboxBufferData();
 			}
 		}
-		//character->LoadHitboxComputeShaderProgram(hitboxCompute);
 		character->Init();
 
 		character->SetProjectionMatrix(WinAPIwindowManager::GetMainWindow()->GetProjectionMatrix());

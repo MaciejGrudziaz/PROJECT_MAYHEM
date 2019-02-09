@@ -74,12 +74,9 @@ public:
 	Hitbox* GetMainHitbox() { return mainHitbox; }
 	int GetHitboxCount()const { return hitboxes.size(); }
 
-	void LoadHitboxDataFromShaders();
-
 	void LoadShader(Shader* shaderProgram_);
 
 	void LoadHitboxShader(Shader* hitboxBasicShaderProgram_);
-	void LoadHitboxComputeShader(Shader* hitboxComputeShaderProgram);
 
 	int LoadTexture(std::string filename);
 
@@ -183,12 +180,17 @@ class StaticObject :public Object {
 
 	void UpdateHitboxes();
 
+	bool updateHitbox;
+
 public:
-	StaticObject() { shaderManager = new StaticObjectShaderManager(); }
+	StaticObject():updateHitbox(true) { shaderManager = new StaticObjectShaderManager(); }
 
 	void Init();
 
 	void Update();
 
 	void Draw();
+
+	void SetUpdateHitboxes() { updateHitbox = true; }
+	void ResetUpdateHitbox() { updateHitbox = false; }
 };
