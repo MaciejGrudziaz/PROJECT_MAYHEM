@@ -1,0 +1,72 @@
+#pragma once
+#include <time.h>
+#include "Hitbox.h"
+//#include <vector>
+//#include <glm/glm.hpp>
+
+//------------------------------------------------------------------------------------------------------
+//-------------------------------------------DETEKCJA KOLIZJI-------------------------------------------
+//--------------------klasa odpowiadaj¹ca ze detekcjê kolizji obiektów w œwiecie gry--------------------
+//------------------------------------------------------------------------------------------------------
+
+const unsigned int RayCastLinesNum = 128;																					//liczba prostych u¿ywanych przy algorytmie 'Ray Cast'
+
+struct ModelCollision {
+	bool status;																											//status kolizji: TRUE - kolizja zasz³a, FALSE - nie by³o kolizji
+	//sk³adowe klasy okreœlaj¹ce detekcjê kolizji tylko z g³ównym hitboxem modelu/obiektu
+	//u¿ywane jeœli dany model/obiekt posiada TYLKO g³ównego hitboxa
+	//jeœli zaszla kolizja z g³ównym hitboxem modelu ['Character']:						'mainColBox = TRUE', 'mainColBoxObjIdx = -1'
+	//jeœli zasz³a kolizja z g³ównym hitboxem obiektu ['Object' dla klasy 'Character']: 'mainColBox = TRUE', 'mainColBoxObjIdx = indeks_obiektu'
+	bool mainColBox;																										//status kolizji z g³ównym hitboxem modelu/obiektu
+	int mainColBoxObjIdx;																									//indeks obiektu dla którego zasz³a kolizja z g³ównym hitboxem
+	//wektor przechowuj¹cy pary (objIdx, colBoxIdx)
+	//'objIdx' - indeks obiektu z któym zasz³a kolizja dla aktualnie sprawdzanego modelu
+	//'colBoxIdx' - indeks dla bry³y kolizji dla obiektu opisanego poprzez 'indeks obiektu' z któr¹ zasz³a kolizja dla aktualnie sprawdzanego modelu
+	std::vector<std::pair<unsigned int, unsigned int>> colIdx;
+
+	ModelCollision() :status(false), mainColBox(false), mainColBoxObjIdx(-1) {}
+};
+
+//wektor przechowuj¹cy pary (normal, linesCrossed) dla danej pary (objIdx,colBoxIdx)
+//'normal' - wektor normalny do œciany badanej bry³y kolizji ('colBoxIdx')
+//'linesCrossed' - liczba prostych przechodz¹cych przez œcianê opisan¹ przez normaln¹ 'normal' podczas testu 'Ray Cast' dla aktualnie badanej bry³y kolizji
+typedef std::vector<std::pair<glm::vec3, unsigned int>> CollisionNormals;
+
+class CollisionDetection {
+	//-----------------------------------------------------------------------------------------------------------------------------
+	//--------------------------------------------------------ALGORYTM GJK---------------------------------------------------------
+	//------------------------------------------------funckje tworz¹ce algorytm GJK------------------------------------------------
+	//-----------------------------------------------------------------------------------------------------------------------------
+	static bool GJK(std::vector<glm::vec3>&model1, std::vector<glm::vec3>&model2);												//g³ówna funkcja algorytmu GJK
+
+	static glm::vec3 GJK_StartVector(std::vector<glm::vec3>&model1, std::vector<glm::vec3>&model2);									//wyliczanie pocz¹tkowego wektora kierunkowego
+
+	static glm::vec3 GJK_SupportFunction(std::vector<glm::vec3>&model1, std::vector<glm::vec3>&model2,glm::vec3 d);						//'Support function' dla GJK
+
+	static bool GJK_SimplexContainsORIGIN(std::vector<glm::vec3>& Simplex);													//sprawdzanie czy Sympleks zawiera punkt (0,0,0)
+	static void GJK_SimplexContainsORIGIN_CreateNormals(std::vector<glm::vec3>& Simplex, glm::vec3 n[]);							//funkcja pomocnicza - budowanie normalnych dla Sympleksa
+	static void GJK_SimplexContainsORIGIN_CreateSurfaces(std::vector<glm::vec3>& Simplex, glm::vec3 n[], double Surface[][4]);	//funkcja pomocnicza - budowanie powierzchni dla Sympleksa
+
+	static glm::vec3 GJK_GetDirection(std::vector<glm::vec3>&Simplex);															//funkcja wyznaczaj¹ca wektor kierunkowy w kolejnych iteracjach algorytmu
+
+	//Iteracja 1 [2 punkty w Sympleksie]
+	static glm::vec3 GJK_GetDirection_Iteration_1(std::vector<glm::vec3>&Simplex);
+	//Iteracja 2 [3 punkty w Sympleksie]
+	static glm::vec3 GJK_GetDirection_Iteration_2(std::vector<glm::vec3>&Simplex);
+	static glm::vec3 GJK_GetDirection_Iteration_2_AB(std::vector<glm::vec3>&Simplex, glm::vec3 AB, glm::vec3 AC, glm::vec3 A0);
+	static glm::vec3 GJK_GetDirection_Iteration_2_AC(std::vector<glm::vec3>&Simplex, glm::vec3 AB, glm::vec3 AC, glm::vec3 A0);
+	static glm::vec3 GJK_GetDirection_Iteration_2_CBA(glm::vec3 AB, glm::vec3 AC, glm::vec3 A0);
+	static glm::vec3 GJK_GetDirection_Iteration_2_ABC(glm::vec3 AB, glm::vec3 AC, glm::vec3 A0);
+	//Iteracja 3 [4 punkty w Sympleksie]
+	static glm::vec3 GJK_GetDirection_Iteration_3(std::vector<glm::vec3>&Simplex);
+	static glm::vec3 GJK_GetDirection_Iteration_3_AB(std::vector<glm::vec3>&Simplex, glm::vec3 AB, glm::vec3 AC, glm::vec3 A0);
+	static glm::vec3 GJK_GetDirection_Iteration_3_AC(std::vector<glm::vec3>&Simplex, glm::vec3 AB, glm::vec3 AC, glm::vec3 A0);
+	static glm::vec3 GJK_GetDirection_Iteration_3_AD(std::vector<glm::vec3>&Simplex, glm::vec3 AC, glm::vec3 AD, glm::vec3 A0);
+	static glm::vec3 GJK_GetDirection_Iteration_3_ABC(std::vector<glm::vec3>&Simplex, glm::vec3 AC, glm::vec3 AB, glm::vec3 A0);
+	static glm::vec3 GJK_GetDirection_Iteration_3_ABD(std::vector<glm::vec3>&Simplex, glm::vec3 AB, glm::vec3 AD, glm::vec3 A0);
+	static glm::vec3 GJK_GetDirection_Iteration_3_ACD(std::vector<glm::vec3>&Simplex, glm::vec3 AD, glm::vec3 AC, glm::vec3 A0);
+
+public:
+	static bool CheckCollision(Hitbox* model1, Hitbox* model2);												//sprawdzanie kolizji pomiêdzy dwoma modelami
+				
+};

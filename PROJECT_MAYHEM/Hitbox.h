@@ -46,8 +46,8 @@ struct Hitbox {
 
 	Axis localAxis;
 	//glm::vec4 initVertices[8];
-	glm::vec4 basicVertices[8];
-	glm::vec4 transformVertices[8];
+	glm::vec3 basicVertices[8];
+	glm::vec3 transformVertices[8];
 	int jointIdx;
 	static unsigned indices[12 * 2];
 

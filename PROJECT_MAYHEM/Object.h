@@ -166,7 +166,7 @@ class DynamicObject :public Object {
 	void UpdateHitboxes();
 
 public:
-	DynamicObject() { shaderManager = new DynamicObjectShaderManager(); }
+	DynamicObject() { shaderManager = new DynamicObjectShaderManager(); ShowMainHitbox(); }
 
 	void Init();
 

@@ -211,7 +211,7 @@ int ImportFile::LoadControlPt(BasicObject* object, std::fstream& file) {
 		controlPt.coords.x = controlPtIn[i].coords[0];
 		controlPt.coords.y = controlPtIn[i].coords[1];
 		controlPt.coords.z = controlPtIn[i].coords[2];
-		controlPt.coords.w = 0.0;
+		//controlPt.coords.w = 0.0;
 
 		for (int j = 0; j < 4; ++j) {
 			BasicObject::BlendingIndexWeightPair blendAndWeight;
@@ -500,7 +500,7 @@ int ImportFile::LoadHitbox(std::fstream& file, int objectIdx) {
 		hitbox->basicVertices[i].x = basicVertices[i * 3 + 0];
 		hitbox->basicVertices[i].y = basicVertices[i * 3 + 1];
 		hitbox->basicVertices[i].z = basicVertices[i * 3 + 2];
-		hitbox->basicVertices[i].w = 0.0f;
+		//hitbox->basicVertices[i].w = 0.0f;
 	}
 
 	int blockComplement = blockSize - (bytesRead%blockSize);

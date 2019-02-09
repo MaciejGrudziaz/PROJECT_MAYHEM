@@ -3,6 +3,7 @@
 void ResourcesManager::Init() {
 	//BasicCharacter* soldier=LoadModel<BasicCharacter>("MODELS/TEST_1_4.mgr","MODEL1");
 	Player* soldier = LoadModel<Player>("MODELS/TEST_1_4.mgr", "MODEL1");
+	
 
 	//glm::vec3 pos = AutoList<BasicCharacter>::GetObj(0)->GetPosition();
 	//pos.z -= 10.0f;

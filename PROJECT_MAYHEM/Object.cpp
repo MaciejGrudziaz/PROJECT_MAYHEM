@@ -287,11 +287,11 @@ void Object::WriteErrorToFile(std::string message) {
 }
 
 void Object::GetSizeFromMainHitbox() {
-	minVec = maxVec = basicObject->globalTransform*mainHitbox->basicVertices[0];
+	minVec = maxVec = basicObject->globalTransform*glm::vec4(mainHitbox->basicVertices[0],1.0f);
 	
 	glm::vec3 vert;
 	for (int i = 1; i < 8; ++i) {
-		vert = basicObject->globalTransform*mainHitbox->basicVertices[i];
+		vert = basicObject->globalTransform*glm::vec4(mainHitbox->basicVertices[i],1.0f);
 
 		for (int j = 0; j < 3; ++j) {
 			if (vert[j] > maxVec[j]) maxVec[j] = vert[j];
@@ -451,7 +451,7 @@ void DynamicObject::SetVerticesBuffer() {
 void DynamicObject::UpdateHitboxes() {
 	if (mainHitbox != nullptr) {
 		for (int i = 0; i < 8; ++i)
-			mainHitbox->transformVertices[i] = model * mainHitbox->basicVertices[i];
+			mainHitbox->transformVertices[i] = model * glm::vec4(mainHitbox->basicVertices[i],1.0f);
 	}
 
 	for (HitboxMap::iterator it = hitboxes.begin(); it != hitboxes.end(); ++it) {
@@ -463,10 +463,10 @@ void DynamicObject::UpdateHitboxes() {
 
 		for (int i = 0; i < 8; ++i) {
 			glm::vec4 nextPos, prevPos;
-			nextPos = nextJointMat * it->second->basicVertices[i];
-			prevPos = prevJointMat * it->second->basicVertices[i];
+			nextPos = nextJointMat * glm::vec4(it->second->basicVertices[i],1.0f);
+			prevPos = prevJointMat * glm::vec4(it->second->basicVertices[i],1.0f);
 			it->second->transformVertices[i] = prevPos + animationManager->GetInterpolationVal()*(nextPos - prevPos);
-			it->second->transformVertices[i] = model * it->second->transformVertices[i];
+			it->second->transformVertices[i] = model * glm::vec4(it->second->transformVertices[i],1.0f);
 		}
 	}
 }
@@ -578,12 +578,12 @@ void StaticObject::UpdateHitboxes() {
 	if (updateHitbox == true) {
 		if (mainHitbox != nullptr) {
 			for (int i = 0; i < 8; ++i)
-				mainHitbox->transformVertices[i] = model * mainHitbox->basicVertices[i];
+				mainHitbox->transformVertices[i] = model * glm::vec4(mainHitbox->basicVertices[i],1.0f);
 		}
 
 		for (HitboxMap::iterator it = hitboxes.begin(); it != hitboxes.end(); ++it) {
 			for (int i = 0; i < 8; ++i)
-				it->second->transformVertices[i] = model * it->second->basicVertices[i];
+				it->second->transformVertices[i] = model * glm::vec4(it->second->basicVertices[i],1.0f);
 		}
 	}
 }

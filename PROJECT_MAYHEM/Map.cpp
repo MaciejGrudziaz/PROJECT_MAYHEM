@@ -30,7 +30,7 @@ void Map::TransformObjectsVertices() {
 		objectTransformedVertices.push_back(transformedVert);
 
 		for (int j = 0; j < GetModel()->GetObject_(i)->GetBasicObject()->controlPoints.size(); ++j) {
-			vert = transformMat * GetModel()->GetObject_(i)->GetBasicObject()->controlPoints[j].coords;
+			vert = transformMat * glm::vec4(GetModel()->GetObject_(i)->GetBasicObject()->controlPoints[j].coords,1.0f);
 			transformedVert->vertices.push_back(vert);
 		}
 	}

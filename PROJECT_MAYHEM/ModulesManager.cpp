@@ -33,6 +33,13 @@ void ModulesManager::Process() {
 
 		for (unsigned i = 0; i < AutoList<Character>::GetCount(); ++i)
 			AutoList<Character>::GetObj(i)->Update();
+
+		//for (unsigned i = 0; i < AutoList<Character>::GetCount(); ++i)
+		bool col = false;
+		col=CollisionDetection::CheckCollision(AutoList<BasicCharacter>::GetObj(0)->GetModel()->GetObject_(0)->GetMainHitbox(), 
+			AutoList<BasicCharacter>::GetObj(1)->GetModel()->GetObject_(0)->GetMainHitbox());
+		if (col == true) 
+			std::cout << "Collision!";
 	}
 
 	Graphics::Process();

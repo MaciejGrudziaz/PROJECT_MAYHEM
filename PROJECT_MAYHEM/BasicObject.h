@@ -70,7 +70,7 @@ struct BasicObject {
 	};
 
 	struct ControlPoint {
-		glm::vec4 coords;
+		glm::vec3 coords;
 		std::vector<BlendingIndexWeightPair> blendingInfo;
 	};
 

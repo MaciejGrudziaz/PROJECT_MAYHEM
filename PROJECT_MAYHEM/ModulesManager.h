@@ -4,6 +4,8 @@
 #include "InputModule.h"
 #include "ResourcesManager.h"
 #include "CONST.h"
+#include "CollisionDetection.h"
+#include <iostream>
 
 class ModulesManager {
 	//static const int targetFPS;
