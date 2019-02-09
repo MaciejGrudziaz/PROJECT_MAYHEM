@@ -481,7 +481,7 @@ void DynamicObject::SetVerticesBuffer() {
 }
 
 void DynamicObject::UpdateHitboxes() {
-	unsigned computeShaderProgram = shaderManager->GetHitboxComputeShader()->GetProgram();
+	/*unsigned computeShaderProgram = shaderManager->GetHitboxComputeShader()->GetProgram();
 	int modelLoc = shaderManager->GetModelHitboxComputeLoc();
 	int interpolationLoc = shaderManager->GetHitboxComputeInterpolationLoc();
 	unsigned computeInBuffer = shaderManager->GetHitboxComputeInBuffer();
@@ -508,18 +508,148 @@ void DynamicObject::UpdateHitboxes() {
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, shaderManager->GetHitboxComputeOutBuffer());
 	void* hitboxComputeOutBufferPtr = glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, hitboxVerticesCount * sizeof(float), GL_MAP_READ_BIT);
-	//void* hitboxComputeOutBufferPtr = glMapNamedBufferRange(shaderManager->GetHitboxComputeOutBuffer(), 0, hitboxVerticesCount * sizeof(float), GL_MAP_READ_BIT);
 
 	glMemoryBarrier(GL_BUFFER_UPDATE_BARRIER_BIT);
 
-	//memcpy(hitboxOutVertices, shaderManager->GetHitboxComputeOutBuferPtr(), hitboxVerticesCount * sizeof(float));
 	if(hitboxComputeOutBufferPtr!=nullptr) 
 		memcpy(hitboxOutVertices, hitboxComputeOutBufferPtr, hitboxVerticesCount * sizeof(float));
 
 	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-	//glUnmapNamedBuffer(shaderManager->GetHitboxComputeOutBuffer());
 
-	LoadHitboxDataFromShaders();
+	LoadHitboxDataFromShaders();*/
+
+
+	/*struct HitboxThread {
+		int firstHitbox, lastHitbox;
+		int jointCount;
+		float *nextMatrices, *prevMatrices;
+		std::vector<Hitbox*> hitboxes;
+		float interpolation;
+		glm::mat4 model;
+
+		HitboxThread() {}
+
+		HitboxThread(int first, int last, const float *nextMat, const float *prevMat, HitboxMap* hitboxes_, float interpolation_, glm::mat4 model_, int jointCount_) :
+			firstHitbox(first), lastHitbox(last), interpolation(interpolation_), model(model_),jointCount(jointCount_)
+		{
+			nextMatrices = new float[jointCount * 16];
+			prevMatrices = new float[jointCount * 16];
+			memcpy(nextMatrices, nextMat, jointCount * 16 * sizeof(float));
+			memcpy(prevMatrices, prevMat, jointCount * 16 * sizeof(float));
+
+			int idx = 0;
+			for (HitboxMap::iterator it = hitboxes_->begin(); it != hitboxes_->end(); ++it) {
+				if (idx >= first && idx < last) {
+					hitboxes.push_back(it->second);
+				}
+			}
+		}
+
+		HitboxThread(const HitboxThread& hitboxThread_){
+			firstHitbox = hitboxThread_.firstHitbox;
+			lastHitbox = hitboxThread_.lastHitbox;
+			jointCount = hitboxThread_.jointCount;
+			interpolation = hitboxThread_.interpolation;
+			model = hitboxThread_.model;
+
+			for (int i = 0; i < hitboxThread_.hitboxes.size(); ++i)
+				hitboxes.push_back(hitboxThread_.hitboxes[i]);
+
+			nextMatrices = new float[16 * jointCount];
+			prevMatrices = new float[16 * jointCount];
+			memcpy(nextMatrices, hitboxThread_.nextMatrices, jointCount * 16 * sizeof(float));
+			memcpy(prevMatrices, hitboxThread_.prevMatrices, jointCount * 16 * sizeof(float));
+		}
+
+		void Init(int first, int last, const float *nextMat, const float *prevMat, HitboxMap* hitboxes_, float interpolation_, glm::mat4 model_, int jointCount_) {
+			firstHitbox = first;
+			lastHitbox = last;
+			interpolation = interpolation_;
+			model = model_;
+			jointCount = jointCount_;
+
+			nextMatrices = new float[jointCount * 16];
+			prevMatrices = new float[jointCount * 16];
+			memcpy(nextMatrices, nextMat, jointCount * 16 * sizeof(float));
+			memcpy(prevMatrices, prevMat, jointCount * 16 * sizeof(float));
+
+			int idx = 0;
+			for (HitboxMap::iterator it = hitboxes_->begin(); it != hitboxes_->end(); ++it) {
+				if (idx >= first && idx < last) {
+					hitboxes.push_back(it->second);
+				}
+			}
+		}
+
+		void operator()() {
+			float mat[16];
+			glm::mat4 nextJointMat,prevJointMat;
+			glm::vec4 nextPos, prevPos;
+			//int idx = 0;
+			//for (HitboxMap::iterator it = hitboxes.begin(); it != hitboxes.end(); ++it) {
+			for (Hitbox* hitbox : hitboxes) {
+				//if (idx >= firstHitbox && idx < lastHitbox) {
+					memcpy(mat, nextMatrices + hitbox->jointIdx * 16, 16 * sizeof(float));
+					nextJointMat = glm::make_mat4(mat);
+					memcpy(mat, prevMatrices + hitbox->jointIdx * 16, 16 * sizeof(float));
+					prevJointMat = glm::make_mat4(mat);
+
+					for (int i = 0; i < 8; ++i) {
+						nextPos = nextJointMat * hitbox->basicVertices[i];
+						prevPos = prevJointMat * hitbox->basicVertices[i];
+
+						hitbox->transformVertices[i] = prevPos + interpolation * (nextPos - prevPos);
+						hitbox->transformVertices[i] = model * hitbox->transformVertices[i];
+					}
+				//}
+			}
+				//++idx;
+			//}
+		}
+
+		~HitboxThread() {
+			delete[]nextMatrices;
+			delete[]prevMatrices;
+		}
+	};
+
+	const int threadCount = 3;
+	boost::thread hitboxCompute[threadCount];
+	//HitboxThread hitboxThreads[8];
+	int firstHitbox = 0;
+	int hitboxCountPerThread = hitboxes.size() / threadCount;
+	for (int i = 0; i < threadCount; ++i) {
+		if (i < threadCount - 1) {
+			HitboxThread hitboxThread(firstHitbox, firstHitbox + hitboxCountPerThread, animationManager->GetJointsNextTransformMatrices(),
+				animationManager->GetJointsPreviousTransformMatrices(), &hitboxes, animationManager->GetInterpolationVal(), model, basicObject->skeleton.joints.size());
+			hitboxCompute[i] = boost::thread(hitboxThread);
+		}
+		else {
+			HitboxThread hitboxThread(firstHitbox, hitboxes.size(), animationManager->GetJointsNextTransformMatrices(),
+				animationManager->GetJointsPreviousTransformMatrices(), &hitboxes, animationManager->GetInterpolationVal(), model, basicObject->skeleton.joints.size());
+			hitboxCompute[i] = boost::thread(hitboxThread);
+		}
+		firstHitbox += hitboxCountPerThread;
+	}
+
+	for (int i = 0; i < threadCount; ++i)
+		hitboxCompute[i].join();*/
+
+	for (HitboxMap::iterator it = hitboxes.begin(); it != hitboxes.end(); ++it) {
+		float mat[16];
+		memcpy(mat, animationManager->GetJointsNextTransformMatrices() + it->second->jointIdx * 16, 16 * sizeof(float));
+		glm::mat4 nextJointMat = glm::make_mat4(mat);
+		memcpy(mat, animationManager->GetJointsPreviousTransformMatrices() + it->second->jointIdx * 16, 16 * sizeof(float));
+		glm::mat4 prevJointMat = glm::make_mat4(mat);
+
+		for (int i = 0; i < 8; ++i) {
+			glm::vec4 nextPos, prevPos;
+			nextPos = nextJointMat * it->second->basicVertices[i];
+			prevPos = prevJointMat * it->second->basicVertices[i];
+			it->second->transformVertices[i] = prevPos + animationManager->GetInterpolationVal()*(nextPos - prevPos);
+			it->second->transformVertices[i] = model * it->second->transformVertices[i];
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------

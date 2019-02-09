@@ -8,6 +8,7 @@
 #include <stb_image.h>
 #include <map>
 #include <set>
+#include <boost/thread.hpp>
 #include "BasicObject.h"
 //#include "ResourcesManager.h"
 #include "Shader.h"
