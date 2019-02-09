@@ -506,7 +506,9 @@ void DynamicObject::UpdateHitboxes() {
 
 	glDispatchCompute(hitboxes.size()+1, 1, 1);
 
-	void* hitboxComputeOutBufferPtr = glMapNamedBufferRange(shaderManager->GetHitboxComputeOutBuffer(), 0, hitboxVerticesCount * sizeof(float), GL_MAP_READ_BIT);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, shaderManager->GetHitboxComputeOutBuffer());
+	void* hitboxComputeOutBufferPtr = glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, hitboxVerticesCount * sizeof(float), GL_MAP_READ_BIT);
+	//void* hitboxComputeOutBufferPtr = glMapNamedBufferRange(shaderManager->GetHitboxComputeOutBuffer(), 0, hitboxVerticesCount * sizeof(float), GL_MAP_READ_BIT);
 
 	glMemoryBarrier(GL_BUFFER_UPDATE_BARRIER_BIT);
 
@@ -514,7 +516,8 @@ void DynamicObject::UpdateHitboxes() {
 	if(hitboxComputeOutBufferPtr!=nullptr) 
 		memcpy(hitboxOutVertices, hitboxComputeOutBufferPtr, hitboxVerticesCount * sizeof(float));
 
-	glUnmapNamedBuffer(shaderManager->GetHitboxComputeOutBuffer());
+	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+	//glUnmapNamedBuffer(shaderManager->GetHitboxComputeOutBuffer());
 
 	LoadHitboxDataFromShaders();
 }
@@ -636,7 +639,9 @@ void StaticObject::UpdateHitboxes() {
 
 		glDispatchCompute(hitboxes.size()+1, 1, 1);
 
-		void* hitboxComputeOutBufferPtr = glMapNamedBufferRange(shaderManager->GetHitboxComputeOutBuffer(), 0, 32 * sizeof(float), GL_MAP_READ_BIT);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, shaderManager->GetHitboxComputeOutBuffer());
+		void* hitboxComputeOutBufferPtr = glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, 32 * sizeof(float), GL_MAP_READ_BIT);
+		//void* hitboxComputeOutBufferPtr = glMapNamedBufferRange(shaderManager->GetHitboxComputeOutBuffer(), 0, 32 * sizeof(float), GL_MAP_READ_BIT);
 
 		glMemoryBarrier(GL_BUFFER_UPDATE_BARRIER_BIT);
 
@@ -648,7 +653,8 @@ void StaticObject::UpdateHitboxes() {
 		if(hitboxComputeOutBufferPtr!=nullptr)
 			memcpy(hitboxOutVertices, hitboxComputeOutBufferPtr, hitboxVerticesCount * sizeof(float));
 
-		glUnmapNamedBuffer(shaderManager->GetHitboxComputeOutBuffer());
+		glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+		//glUnmapNamedBuffer(shaderManager->GetHitboxComputeOutBuffer());
 
 		LoadHitboxDataFromShaders();
 	}

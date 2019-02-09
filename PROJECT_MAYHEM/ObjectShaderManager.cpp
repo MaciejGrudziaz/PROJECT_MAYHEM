@@ -46,6 +46,10 @@ void ObjectShaderManager::SetHitboxComputeBuffers(float* verticesBuffer_, int ve
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, hitboxComputeOutBuffer);
 
 	//hitboxComputeOutBufferPtr = glMapNamedBufferRange(hitboxComputeOutBuffer, 0,verticesCount_*sizeof(float),GL_MAP_READ_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+
+	GLenum err;
+	err = glGetError();
+	assert(err == GL_NO_ERROR);
 }
 
 void ObjectShaderManager::LoadTexture(const char* filename) {
@@ -78,6 +82,10 @@ void ObjectShaderManager::LoadTexture(const char* filename) {
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 		stbi_image_free(data);
+
+		GLenum err;
+		err = glGetError();
+		assert(err == GL_NO_ERROR);
 	}
 }
 
@@ -94,6 +102,10 @@ void ObjectShaderManager::GenerateBuffersAndArrays() {
 	glGenBuffers(1, &hitboxIndicesBuffer);
 	glGenBuffers(1, &hitboxComputeInBuffer);
 	glGenBuffers(1, &hitboxComputeOutBuffer);
+
+	GLenum err;
+	err = glGetError();
+	assert(err==GL_NO_ERROR);
 }
 
 void ObjectShaderManager::LoadModelMatrixLoc() {
@@ -102,6 +114,10 @@ void ObjectShaderManager::LoadModelMatrixLoc() {
 		WriteErrorToFile("Character transform matrix location not found!");
 		throw std::exception();
 	}
+
+	GLenum err;
+	err = glGetError();
+	assert(err == GL_NO_ERROR);
 }
 
 void ObjectShaderManager::LoadViewMatrixLoc() {
@@ -110,6 +126,10 @@ void ObjectShaderManager::LoadViewMatrixLoc() {
 		WriteErrorToFile("View transform matrix location not found!");
 		throw std::exception();
 	}
+
+	GLenum err;
+	err = glGetError();
+	assert(err == GL_NO_ERROR);
 }
 
 void ObjectShaderManager::LoadProjectionMatrixLoc() {
@@ -118,6 +138,10 @@ void ObjectShaderManager::LoadProjectionMatrixLoc() {
 		WriteErrorToFile("Projection transform matrix location not found!");
 		throw std::exception();
 	}
+
+	GLenum err;
+	err = glGetError();
+	assert(err == GL_NO_ERROR);
 }
 
 void ObjectShaderManager::LoadTextureAvailableLoc() {
@@ -126,6 +150,10 @@ void ObjectShaderManager::LoadTextureAvailableLoc() {
 		WriteErrorToFile("Texture available switch location not found!");
 		throw std::exception();
 	}
+
+	GLenum err;
+	err = glGetError();
+	assert(err == GL_NO_ERROR);
 }
 
 void ObjectShaderManager::LoadHitboxModelMatrixLoc() {
@@ -134,6 +162,10 @@ void ObjectShaderManager::LoadHitboxModelMatrixLoc() {
 		WriteErrorToFile("Hitbox model matrix location not found!");
 		throw std::exception();
 	}
+
+	GLenum err;
+	err = glGetError();
+	assert(err == GL_NO_ERROR);
 }
 
 void ObjectShaderManager::LoadHitboxViewMatrixLoc() {
@@ -142,6 +174,10 @@ void ObjectShaderManager::LoadHitboxViewMatrixLoc() {
 		WriteErrorToFile("Hitbox view matrix location not found!");
 		throw std::exception();
 	}
+
+	GLenum err;
+	err = glGetError();
+	assert(err == GL_NO_ERROR);
 }
 
 void ObjectShaderManager::LoadHitboxProjectionMatrixLoc() {
@@ -150,6 +186,10 @@ void ObjectShaderManager::LoadHitboxProjectionMatrixLoc() {
 		WriteErrorToFile("Hitbox projection matrix location not found!");
 		throw std::exception();
 	}
+
+	GLenum err;
+	err = glGetError();
+	assert(err == GL_NO_ERROR);
 }
 
 void ObjectShaderManager::LoadHitboxComputeModelMatrixLoc() {
@@ -158,6 +198,10 @@ void ObjectShaderManager::LoadHitboxComputeModelMatrixLoc() {
 		WriteErrorToFile("Hitbox compute model transform matrix location not found!");
 		throw std::exception();
 	}
+
+	GLenum err;
+	err = glGetError();
+	assert(err == GL_NO_ERROR);
 }
 
 //void ObjectShaderManager::LoadJointsPreviousMatricesLoc() {
@@ -182,6 +226,10 @@ void ObjectShaderManager::LoadInterpolationLoc() {
 		WriteErrorToFile("Interpolation value location not found!");
 		throw std::exception();
 	}
+
+	GLenum err;
+	err = glGetError();
+	assert(err == GL_NO_ERROR);
 }
 
 //void ObjectShaderManager::LoadHitboxJointsPreviousMatricesLoc() {
@@ -206,6 +254,10 @@ void ObjectShaderManager::LoadHitboxInterpolationLoc() {
 		WriteErrorToFile("Hitbox interpolation value location not found!");
 		throw std::exception();
 	}
+
+	GLenum err;
+	err = glGetError();
+	assert(err == GL_NO_ERROR);
 }
 
 //void ObjectShaderManager::LoadHitboxComputeJointsPreviousMatricesLoc() {
@@ -230,6 +282,10 @@ void ObjectShaderManager::LoadHitboxComputeInterpolationLoc() {
 		WriteErrorToFile("Hitbox compute interpolation value location not found!");
 		throw std::exception();
 	}
+
+	GLenum err;
+	err = glGetError();
+	assert(err == GL_NO_ERROR);
 }
 
 void ObjectShaderManager::WriteErrorToFile(const char* message) {
@@ -261,6 +317,10 @@ void DynamicObjectShaderManager::SetVAO(float* verticesBuffer, int verticesCount
 		glVertexAttribPointer(i + 2, 2, GL_FLOAT, GL_FALSE, objectBufferVertexAttribCount * sizeof(float), (void*)((2 * i + 5) * sizeof(float)));
 		glEnableVertexAttribArray(i + 2);
 	}
+
+	GLenum err;
+	err = glGetError();
+	assert(err == GL_NO_ERROR);
 }
 
 void DynamicObjectShaderManager::SetHitboxVAO(float* verticesBuffer, unsigned* indicesBuffer, int verticesCount) {
@@ -274,6 +334,10 @@ void DynamicObjectShaderManager::SetHitboxVAO(float* verticesBuffer, unsigned* i
 	glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, hitboxObjectBufferVertexAttribCount * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
+
+	GLenum err;
+	err = glGetError();
+	assert(err == GL_NO_ERROR);
 }
 
 void DynamicObjectShaderManager::Init() {
@@ -306,26 +370,40 @@ void DynamicObjectShaderManager::GenerateBuffersAndArrays() {
 
 	glGenBuffers(1, &jointsPrevMatricesBuffer);
 	glGenBuffers(1, &jointsNextMatricesBuffer);
+
+	GLenum err;
+	err = glGetError();
+	assert(err == GL_NO_ERROR);
 }
 
 void DynamicObjectShaderManager::SetJointsBuffers(int jointsCount) {
 	glUseProgram(shaderProgram->GetProgram());
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, jointsPrevMatricesBuffer);
-	glBufferStorage(GL_SHADER_STORAGE_BUFFER, jointsCount * 16 * sizeof(float), NULL, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+	//glBufferStorage(GL_SHADER_STORAGE_BUFFER, jointsCount * 16 * sizeof(float), NULL, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, jointsCount * 16 * sizeof(float), NULL, GL_DYNAMIC_DRAW);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, jointsNextMatricesBuffer);
-	glBufferStorage(GL_SHADER_STORAGE_BUFFER, jointsCount * 16 * sizeof(float), NULL, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+	//glBufferStorage(GL_SHADER_STORAGE_BUFFER, jointsCount * 16 * sizeof(float), NULL, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, jointsCount * 16 * sizeof(float), NULL, GL_DYNAMIC_DRAW);
 
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, jointsPrevMatricesBuffer);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, jointsNextMatricesBuffer);
 
-	GLsync sync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-	GLint result;
-	do { glGetSynciv(sync, GL_SYNC_STATUS, sizeof(GLint), NULL, &result); } while (result != GL_SIGNALED);
+	//GLsync sync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+	//GLint result;
+	//do { glGetSynciv(sync, GL_SYNC_STATUS, sizeof(GLint), NULL, &result); } while (result != GL_SIGNALED);
 
-	jointsPrevMatBufferPtr = glMapNamedBufferRange(jointsPrevMatricesBuffer,0,jointsCount*16*sizeof(float),GL_MAP_WRITE_BIT|GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
-	jointsNextMatBufferPtr = glMapNamedBufferRange(jointsNextMatricesBuffer, 0,jointsCount*16*sizeof(float),GL_MAP_WRITE_BIT|GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, jointsPrevMatricesBuffer);
+	jointsPrevMatBufferPtr = glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, jointsCount * 16 * sizeof(float), GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, jointsNextMatricesBuffer);
+	jointsNextMatBufferPtr = glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, jointsCount * 16 * sizeof(float), GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+	//jointsPrevMatBufferPtr = glMapNamedBufferRange(jointsPrevMatricesBuffer,0,jointsCount*16*sizeof(float),GL_MAP_WRITE_BIT|GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+	//jointsNextMatBufferPtr = glMapNamedBufferRange(jointsNextMatricesBuffer, 0,jointsCount*16*sizeof(float),GL_MAP_WRITE_BIT|GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+
+	GLenum err;
+	err = glGetError();
+	assert(err == GL_NO_ERROR);
 }
 
 //-----------------------------------------------------------------------------

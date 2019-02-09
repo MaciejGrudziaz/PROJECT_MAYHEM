@@ -19,6 +19,8 @@ void ResourcesManager::Init() {
 
 	Map* map=LoadModel<Map>("MODELS/MAP_1.mgr","MAP");
 	map->Scale(10.0f, 10.0f, 10.0f);
+	map->TransformObjectsVertices();
+	map->SetGroundObject("Plane");
 }
 
 void ResourcesManager::Clear() {
@@ -49,6 +51,7 @@ T* ResourcesManager::LoadModel(const char* filename,const char* objectName) {
 
 	BasicModel* basicModel = new BasicModel();
 	ImportFile::Import(filename, basicModel);
+
 
 	if (basicModel != nullptr) {
 		//BasicCharacter* character = new BasicCharacter("TEST");

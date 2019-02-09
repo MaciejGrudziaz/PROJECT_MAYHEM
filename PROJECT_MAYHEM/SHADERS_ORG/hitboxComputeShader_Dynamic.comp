@@ -1,4 +1,4 @@
-#version 430 core
+#version 460 core
 
 layout(local_size_x=8) in;
 
@@ -17,15 +17,34 @@ layout(binding=1,std430) buffer outBuffer{
 	JointPos outPos[];
 };
 
+layout(binding=2,std430) buffer prevJointsBuffer{
+	mat4 prevJoints[];
+};
+
+layout(binding=3,std430) buffer nextJointsBuffer{
+	mat4 nextJoints[];
+};
+
 uniform mat4 model;
+
+uniform float interpolation;
 
 void main(){
 	vec4 pos=vec4(inPos[gl_GlobalInvocationID.x].x,inPos[gl_GlobalInvocationID.x].y,inPos[gl_GlobalInvocationID.x].z,1.0f);
+	//vec4 pos=vec4(inPos[gl_GlobalInvocationID.x].pos,1.0f);
+	float idx=inPos[gl_GlobalInvocationID.x].idx;
+
+	if(int(idx) >= 0){
+		vec4 prevPos,nextPos;
+		prevPos=prevJoints[int(idx)]*pos;
+		nextPos=nextJoints[int(idx)]*pos;
+		pos=prevPos+interpolation*(nextPos-prevPos);
+	}
 
 	pos=model*pos;
 
 	outPos[gl_GlobalInvocationID.x].x=pos.x;
 	outPos[gl_GlobalInvocationID.x].y=pos.y;
 	outPos[gl_GlobalInvocationID.x].z=pos.z;
-	outPos[gl_GlobalInvocationID.x].idx=inPos[gl_GlobalInvocationID.x].idx;
+	outPos[gl_GlobalInvocationID.x].idx=idx;
 }

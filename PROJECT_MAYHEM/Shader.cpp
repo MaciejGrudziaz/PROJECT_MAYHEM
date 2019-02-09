@@ -110,11 +110,17 @@ int Shader::LinkShaderProgram() {
 	if (type == TYPE::GEOMETRY) {
 		glAttachShader(shaderProgram, vertexShader);
 		glAttachShader(shaderProgram, fragmentShader);
+
+		GLenum err;
+		err = glGetError();
 	}
 	else if (type == TYPE::COMPUTE)
 		glAttachShader(shaderProgram, computeShader);
 
 	glLinkProgram(shaderProgram);
+
+	GLenum err;
+	err = glGetError();
 
 	int success;
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
@@ -125,9 +131,14 @@ int Shader::LinkShaderProgram() {
 		LoadErrorToFile(infoLog);
 	}
 
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-	glDeleteShader(computeShader);
+	if (type == TYPE::GEOMETRY) {
+		glDeleteShader(vertexShader);
+		glDeleteShader(fragmentShader);
+	}
+	else if (type == TYPE::COMPUTE)
+		glDeleteShader(computeShader);
+
+	err = glGetError();
 
 	return success;
 }

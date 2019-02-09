@@ -1,0 +1,24 @@
+14.1.2019 17:57:7 - ERROR::SHADER::VERTEX::COMPILATION_FAILED
+14.1.2019 17:57:7 - ERROR: 0:2: '' :  incorrect GLSL version: 460
+WARNING: 0:4: 'GL_3DL_array_objects' :  extension is not available in current GLSL version
+WARNING: 0:4: 'GL_3DL_array_objects' :  extension is not available in current GLSL version
+WARNING: 0:? : 'gl_VertexID' : variable is not available in current GLSL version 
+WARNING: 0:? : 'gl_VertexID' : variable is not available in current GLSL version 
+WARNING: 0:? : 'gl_VertexID' : variable is not available in current GLSL version 
+WARNING: 0:? : 'gl_VertexID' : variab
+14.1.2019 17:57:42 - ERROR::SHADER::VERTEX::COMPILATION_FAILED
+14.1.2019 17:57:42 - ERROR: 0:2: '' :  incorrect GLSL version: 460
+WARNING: 0:4: 'GL_3DL_array_objects' :  extension is not available in current GLSL version
+WARNING: 0:4: 'GL_3DL_array_objects' :  extension is not available in current GLSL version
+WARNING: 0:? : 'gl_VertexID' : variable is not available in current GLSL version 
+WARNING: 0:? : 'gl_VertexID' : variable is not available in current GLSL version 
+WARNING: 0:? : 'gl_VertexID' : variable is not available in current GLSL version 
+WARNING: 0:? : 'gl_VertexID' : variab
+7.2.2019 14:29:14 - ERROR::SHADER::VERTEX::COMPILATION_FAILED
+7.2.2019 14:29:14 - ERROR: 0:2: '' :  incorrect GLSL version: 460
+WARNING: 0:4: 'GL_3DL_array_objects' :  extension is not available in current GLSL version
+WARNING: 0:4: 'GL_3DL_array_objects' :  extension is not available in current GLSL version
+WARNING: 0:? : 'gl_VertexID' : variable is not available in current GLSL version 
+WARNING: 0:? : 'gl_VertexID' : variable is not available in current GLSL version 
+WARNING: 0:? : 'gl_VertexID' : variable is not available in current GLSL version 
+WARNING: 0:? : 'gl_VertexID' : variab

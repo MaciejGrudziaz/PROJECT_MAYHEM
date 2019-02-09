@@ -192,11 +192,11 @@ void Character::Init() {
 void Character::Update() {
 	//ProcessInputPackets();
 
-	if (transformUpdate) {
+	//if (transformUpdate) {
 		transform = glm::translate(transform, position);
 		transform = transform * glm::rotate(rotations.y, glm::vec3(0.0f, 1.0f, 0.0f));
 		transform = scale * transform;
-	}
+	//}
 
 	Object* obj = nullptr;
 	glm::mat4 modelMat;

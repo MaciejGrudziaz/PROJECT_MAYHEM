@@ -151,8 +151,12 @@ public:
 	void Init();
 
 	~DynamicObjectShaderManager() {
-		glUnmapNamedBuffer(jointsPrevMatricesBuffer);
-		glUnmapNamedBuffer(jointsNextMatricesBuffer);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, jointsPrevMatricesBuffer);
+		glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, jointsNextMatricesBuffer);
+		glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+		//glUnmapNamedBuffer(jointsPrevMatricesBuffer);
+		//glUnmapNamedBuffer(jointsNextMatricesBuffer);
 
 		glDeleteBuffers(1, &jointsPrevMatricesBuffer);
 		glDeleteBuffers(1, &jointsNextMatricesBuffer);
