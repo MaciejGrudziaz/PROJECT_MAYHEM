@@ -38,8 +38,10 @@ void ModulesManager::Process() {
 		bool col = false;
 		col=CollisionDetection::CheckCollision(AutoList<BasicCharacter>::GetObj(0)->GetModel()->GetObject_(0)->GetMainHitbox(), 
 			AutoList<BasicCharacter>::GetObj(1)->GetModel()->GetObject_(0)->GetMainHitbox());
-		if (col == true) 
-			std::cout << "Collision!";
+		if (col == true)
+			std::cout << "Collision!\r";
+		else std::cout <<"          \r";
+		
 	}
 
 	Graphics::Process();
