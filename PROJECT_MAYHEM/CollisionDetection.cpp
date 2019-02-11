@@ -2,22 +2,22 @@
 
 //sprawdzanie kolizji pomiêdzy dwoma modelami
 //sprawdzenie nastêpuje pomiêdzy g³ówn¹ bry³¹ kolizji modelu pierwszego ['model1'] ,a wszystkimi mo¿liwymi bry³ami kolizji modelu drugiego ['model2']
-bool CollisionDetection::CheckCollision(Hitbox* model1, Hitbox* model2) {
+bool CollisionDetection::CheckCollision(const Hitbox& model1, const Hitbox& model2) {
 	glm::vec3 model1_midPt(0.0f), model2_midPt(0.0f);
 	glm::vec3 model1_min, model1_max, model2_min, model2_max;
 	float model1_R, model2_R;
 
-	model1_min = model1_max = model1->basicVertices[0];
-	model2_min = model2_max = model2->transformVertices[0];
+	model1_min = model1_max = model1.basicVertices[0];
+	model2_min = model2_max = model2.transformVertices[0];
 
 	for (int i = 0; i < 8; ++i) {
-		model1_midPt += model1->transformVertices[i];
-		model2_midPt += model2->transformVertices[i];
+		model1_midPt += model1.transformVertices[i];
+		model2_midPt += model2.transformVertices[i];
 		for (int j = 0; j < 3; ++j) {
-			if (model1->transformVertices[i][j] < model1_min[j]) model1_min[j] = model1->transformVertices[i][j];
-			if (model1->transformVertices[i][j] > model1_max[j]) model1_max[j] = model1->transformVertices[i][j];
-			if (model2->transformVertices[i][j] < model2_min[j]) model2_min[j] = model2->transformVertices[i][j];
-			if (model2->transformVertices[i][j] > model2_max[j]) model2_max[j] = model2->transformVertices[i][j];
+			if (model1.transformVertices[i][j] < model1_min[j]) model1_min[j] = model1.transformVertices[i][j];
+			if (model1.transformVertices[i][j] > model1_max[j]) model1_max[j] = model1.transformVertices[i][j];
+			if (model2.transformVertices[i][j] < model2_min[j]) model2_min[j] = model2.transformVertices[i][j];
+			if (model2.transformVertices[i][j] > model2_max[j]) model2_max[j] = model2.transformVertices[i][j];
 		}
 	}
 	model1_midPt /= 8.0f;
@@ -30,13 +30,29 @@ bool CollisionDetection::CheckCollision(Hitbox* model1, Hitbox* model2) {
 		std::vector<glm::vec3> hitbox1, hitbox2;
 
 		for (int i = 0; i < 8; ++i) {
-			hitbox1.push_back(model1->transformVertices[i]);
-			hitbox2.push_back(model2->transformVertices[i]);
+			hitbox1.push_back(model1.transformVertices[i]);
+			hitbox2.push_back(model2.transformVertices[i]);
 		}
 
 		return GJK(hitbox1, hitbox2);
 	}
 	else return false;
+}
+
+void CollisionDetection::GetCollisionNormals(const Hitbox& model1, const Hitbox& model2, std::vector<glm::vec3>& collisionNormals) {
+	std::map<int, Surface> surfaceCandidates;
+
+	collisionNormals.clear();
+
+	GetCollisonNormals_GetCandidates(model1, model2, surfaceCandidates);
+
+	if (surfaceCandidates.size() == 0)
+		return;
+	else if (surfaceCandidates.size() == 1) {
+		collisionNormals.push_back(surfaceCandidates.begin()->second.n);
+		return;
+	}
+	else GetCollisionNormals_SortCandidates(model1, model2, surfaceCandidates, collisionNormals);
 }
 
 //g³ówna funkcja algorytmu GJK
@@ -435,4 +451,251 @@ glm::vec3 CollisionDetection::GJK_GetDirection_Iteration_3_ACD(std::vector<glm::
 	Simplex.erase(Simplex.begin() + 2);																			//usuñ 3 element z Sympleksu
 	return d;																									//zwróæ now¹ wartoœæ wektora kierunkowego
 																												//ostatni warunek 3 iteracji algorytmu - nie jest sprawdzany ¿aden dodatkowy warunek
+}
+
+glm::vec3 CollisionDetection::GetSurfaceCrossPoint(const Surface& surface, const Line& line) {
+	float t,div;
+	glm::vec3 outPt;
+
+	t = -(surface.A*line.pt.x + surface.B*line.pt.y + surface.C*line.pt.z + surface.D);
+	
+	div = (surface.A*line.vec.x + surface.B*line.vec.y + surface.C*line.vec.z);
+
+	if (div != 0.0f) t /= div;
+	else throw std::exception();
+
+	outPt = line.pt + t * line.vec;
+
+	return outPt;
+}
+float CollisionDetection::GetParam_T_SurfaceCrossPoint(const Surface& surface, const Line& line) {
+	float t, div;
+
+	t = -(surface.A*line.pt.x + surface.B*line.pt.y + surface.C*line.pt.z + surface.D);
+
+	div = (surface.A*line.vec.x + surface.B*line.vec.y + surface.C*line.vec.z);
+
+	if (div != 0.0f) t /= div;
+	else throw std::exception();
+
+	return t;
+}
+
+glm::vec3 CollisionDetection::GetSurfacePointProjection(const Surface& surface, glm::vec3 pt) {
+	float t, div;
+	glm::vec3 outPt;
+
+	t= -(surface.A*pt.x + surface.B*pt.y + surface.C*pt.z + surface.D);
+
+	div = (surface.A*surface.n.x + surface.B*surface.n.y + surface.C*surface.n.z);
+
+	if (div != 0.0f) t /= div;
+	else throw std::exception();
+
+	outPt = pt + t * surface.n;
+
+	return outPt;
+}
+
+float CollisionDetection::GetParam_T_SurfacePointProjection(const Surface& surface, glm::vec3 pt) {
+	float t, div;
+
+	t = -(surface.A*pt.x + surface.B*pt.y + surface.C*pt.z + surface.D);
+
+	div = (surface.A*surface.n.x + surface.B*surface.n.y + surface.C*surface.n.z);
+
+	if (div != 0.0f) t /= div;
+	else throw std::exception();
+
+	return t;
+}
+
+bool CollisionDetection::IfPointInRectangle(glm::vec3 rect1, glm::vec3 rect2, glm::vec3 rect3, glm::vec3 rect4, glm::vec3 checkPt) {
+	//rect points in order [rect1->rect2->rect3->rect4->rect1]
+	Surface s1(glm::vec3(rect1 - rect4), rect1);
+	Surface s2(glm::vec3(rect2 - rect1), rect2);
+	Surface s3(glm::vec3(rect3 - rect2), rect3);
+	Surface s4(glm::vec3(rect4 - rect3), rect4);
+
+	if (GetParam_T_SurfacePointProjection(s1, checkPt) < 0) return false;
+	if (GetParam_T_SurfacePointProjection(s2, checkPt) < 0) return false;
+	if (GetParam_T_SurfacePointProjection(s3, checkPt) < 0) return false;
+	if (GetParam_T_SurfacePointProjection(s4, checkPt) < 0) return false;
+
+	return true;
+}
+
+bool CollisionDetection::IfPointInHitbox(const Hitbox& hitbox, glm::vec3 pt) {
+	Surface s[6];
+
+	s[0] = Surface(hitbox.transformNormals[0], hitbox.transformVertices[0]);
+	s[1] = Surface(hitbox.transformNormals[1], hitbox.transformVertices[0]);
+	s[2] = Surface(hitbox.transformNormals[2], hitbox.transformVertices[1]);
+	s[3] = Surface(hitbox.transformNormals[3], hitbox.transformVertices[2]);
+	s[4] = Surface(hitbox.transformNormals[4], hitbox.transformVertices[3]);
+	s[5] = Surface(hitbox.transformNormals[5], hitbox.transformVertices[4]);
+
+	for (int i = 0; i < 6; ++i)
+		if (GetParam_T_SurfacePointProjection(s[i], pt) < 0) return false;
+
+	return true;
+}
+
+void CollisionDetection::GetCollisonNormals_GetCandidates(const Hitbox& model1, const Hitbox& model2, std::map<int, Surface>& surfaceCandidates) {
+	glm::vec3 midPt(0.0f);
+	Surface model2_s[6];
+
+	surfaceCandidates.clear();
+
+	for (int i = 0; i < 8; ++i)
+		midPt += model1.transformVertices[i];
+
+	midPt /= 8.0f;
+
+	model2_s[0] = Surface(model2.transformNormals[0], model2.transformVertices[0]);
+	model2_s[1] = Surface(model2.transformNormals[1], model2.transformVertices[0]);
+	model2_s[2] = Surface(model2.transformNormals[2], model2.transformVertices[1]);
+	model2_s[3] = Surface(model2.transformNormals[3], model2.transformVertices[2]);
+	model2_s[4] = Surface(model2.transformNormals[4], model2.transformVertices[3]);
+	model2_s[5] = Surface(model2.transformNormals[5], model2.transformVertices[4]);
+
+	for (int i = 0; i < 6; ++i) {
+		if (GetParam_T_SurfacePointProjection(model2_s[i], midPt) < 0)
+			surfaceCandidates.insert(std::map<int, Surface>::value_type(i, model2_s[i]));
+	}
+}
+
+void CollisionDetection::GetCollisionNormals_SortCandidates(const Hitbox& model1, const Hitbox& model2, std::map<int, Surface>& surfaceCandidates, std::vector<glm::vec3>& collisionNormals) {
+	glm::vec3 surfaceMidPt;
+	glm::vec3 surfVec1, surfVec2;
+	glm::vec3 model1_midPt(0.0f);
+	glm::vec3 surfaceModel1MidPtProj;
+
+	const int testPointsCount = 10;
+	float model1_midPtSurfaceDist;
+
+	std::vector<glm::vec3> testPoints;
+
+	collisionNormals.clear();
+
+	for (int i = 0; i < 8; ++i)
+		model1_midPt += model1.transformVertices[i];
+	model1_midPt /= 8.0f;
+
+	for (std::map<int, Surface>::iterator it = surfaceCandidates.begin(); it != surfaceCandidates.end(); ++it) {
+		GetCollisionNormals_SortCandidates_GetSurfaceParams(model2, it->first, &surfaceMidPt, &surfVec1, &surfVec2);
+		surfaceModel1MidPtProj = GetSurfacePointProjection(it->second, model1_midPt);
+		model1_midPtSurfaceDist = glm::length(surfaceModel1MidPtProj - model1_midPt);
+		GetCollisionNormals_SortCandidates_GenerateTestPoints(surfaceMidPt, surfVec1, surfVec2, surfaceModel1MidPtProj, testPointsCount, testPoints);
+
+		for (int i = 0; i < testPoints.size(); ++i) {
+			if (IfPointInHitbox(model1, testPoints[i] + (model1_midPtSurfaceDist / 2.0f)*it->second.n) == true) {
+				collisionNormals.push_back(it->second.n);
+				break;
+			}
+		}
+	}
+}
+
+void CollisionDetection::GetCollisionNormals_SortCandidates_GetSurfaceParams(const Hitbox& model2, int idx, glm::vec3* outSurfaceMidPt, glm::vec3* outSurfaceVec1, glm::vec3* outSurfaceVec2) {
+	*outSurfaceMidPt = glm::vec3(0.0f);
+	switch (idx) {
+	case 0: {
+		*outSurfaceMidPt += model2.transformVertices[0];
+		*outSurfaceMidPt += model2.transformVertices[1];
+		*outSurfaceMidPt += model2.transformVertices[2];
+		*outSurfaceMidPt += model2.transformVertices[3];
+		*outSurfaceMidPt /= 4.0f;
+		*outSurfaceVec1 = model2.transformVertices[1] - model2.transformVertices[0];
+		*outSurfaceVec2 = model2.transformVertices[1] - model2.transformVertices[2];
+		break;
+	}
+	case 1: {
+		*outSurfaceMidPt += model2.transformVertices[0];
+		*outSurfaceMidPt += model2.transformVertices[1];
+		*outSurfaceMidPt += model2.transformVertices[5];
+		*outSurfaceMidPt += model2.transformVertices[4];
+		*outSurfaceMidPt /= 4.0f;
+		*outSurfaceVec1 = model2.transformVertices[0] - model2.transformVertices[1];
+		*outSurfaceVec2 = model2.transformVertices[0] - model2.transformVertices[4];
+		break;
+	}
+	case 2: {
+		*outSurfaceMidPt += model2.transformVertices[1];
+		*outSurfaceMidPt += model2.transformVertices[2];
+		*outSurfaceMidPt += model2.transformVertices[6];
+		*outSurfaceMidPt += model2.transformVertices[5];
+		*outSurfaceMidPt /= 4.0f;
+		*outSurfaceVec1 = model2.transformVertices[1] - model2.transformVertices[2];
+		*outSurfaceVec2 = model2.transformVertices[1] - model2.transformVertices[5];
+		break;
+	}
+	case 3: {
+		*outSurfaceMidPt += model2.transformVertices[2];
+		*outSurfaceMidPt += model2.transformVertices[3];
+		*outSurfaceMidPt += model2.transformVertices[7];
+		*outSurfaceMidPt += model2.transformVertices[6];
+		*outSurfaceMidPt /= 4.0f;
+		*outSurfaceVec1 = model2.transformVertices[2] - model2.transformVertices[3];
+		*outSurfaceVec2 = model2.transformVertices[2] - model2.transformVertices[6];
+		break;
+	}
+	case 4: {
+		*outSurfaceMidPt += model2.transformVertices[3];
+		*outSurfaceMidPt += model2.transformVertices[0];
+		*outSurfaceMidPt += model2.transformVertices[4];
+		*outSurfaceMidPt += model2.transformVertices[7];
+		*outSurfaceMidPt /= 4.0f;
+		*outSurfaceVec1 = model2.transformVertices[3] - model2.transformVertices[0];
+		*outSurfaceVec2 = model2.transformVertices[3] - model2.transformVertices[7];
+		break;
+	}
+	case 5: {
+		*outSurfaceMidPt += model2.transformVertices[4];
+		*outSurfaceMidPt += model2.transformVertices[5];
+		*outSurfaceMidPt += model2.transformVertices[6];
+		*outSurfaceMidPt += model2.transformVertices[7];
+		*outSurfaceMidPt /= 4.0f;
+		*outSurfaceVec1 = model2.transformVertices[4] - model2.transformVertices[5];
+		*outSurfaceVec2 = model2.transformVertices[4] - model2.transformVertices[7];
+		break;
+	}
+	}
+}
+
+void CollisionDetection::GetCollisionNormals_SortCandidates_GenerateTestPoints(const glm::vec3& surfMidPt, const glm::vec3& surfVec1, const glm::vec3& surfVec2, const glm::vec3& surfPtProj, 
+	const int testPtCount, std::vector<glm::vec3>& testPoints) {
+	float dotVec1, dotVec2;
+	glm::vec3 vecMidSurfPt(surfPtProj-surfMidPt);
+
+	testPoints.clear();
+
+	dotVec1 = glm::dot(vecMidSurfPt, surfVec1);
+	dotVec2 = glm::dot(vecMidSurfPt, surfVec2);
+
+	boost::random::mt19937 rng;
+	boost::random::uniform_int_distribution<> randFun(0, 100);
+	int randomVal1,randomVal2;
+	glm::vec3 outPt;
+	for (int i = 0; i < testPtCount; ++i) {
+		randomVal1 = randFun(rng);
+		randomVal2 = randFun(rng);
+
+		if (dotVec1 >= 0 && dotVec2 >= 0) {
+			outPt = surfMidPt + (static_cast<float>(randomVal1) / 100.0f)*surfVec1 + (static_cast<float>(randomVal2) / 100.0f)*surfVec2;
+			testPoints.push_back(outPt);
+		}
+		else if (dotVec1 >= 0 && dotVec2 < 0) {
+			outPt = surfMidPt + (static_cast<float>(randomVal1) / 100.0f)*surfVec1 - (static_cast<float>(randomVal2) / 100.0f)*surfVec2;
+			testPoints.push_back(outPt);
+		}
+		else if (dotVec1 < 0 && dotVec2 < 0) {
+			outPt = surfMidPt - (static_cast<float>(randomVal1) / 100.0f)*surfVec1 - (static_cast<float>(randomVal2) / 100.0f)*surfVec2;
+			testPoints.push_back(outPt);
+		}
+		else if (dotVec1 < 0 && dotVec2 >= 0) {
+			outPt = surfMidPt - (static_cast<float>(randomVal1) / 100.0f)*surfVec1 + (static_cast<float>(randomVal2) / 100.0f)*surfVec2;
+			testPoints.push_back(outPt);
+		}
+	}
 }

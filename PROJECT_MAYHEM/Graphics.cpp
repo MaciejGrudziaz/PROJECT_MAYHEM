@@ -27,6 +27,7 @@ void Graphics::Init() {
 
 	//ResourcesManager::InitTimer();
 
+
 	glEnable(GL_DEPTH_TEST);
 }
 
@@ -63,9 +64,9 @@ void Graphics::Process() {
 
 	//if (ground.render == true) DrawGround();
 	//if (axis.render == true) {
-	//	glDisable(GL_DEPTH_TEST);
-	//	DrawAxis();
-	//	glEnable(GL_DEPTH_TEST);
+		glDisable(GL_DEPTH_TEST);
+		DrawAxis();
+		glEnable(GL_DEPTH_TEST);
 	//}
 }
 

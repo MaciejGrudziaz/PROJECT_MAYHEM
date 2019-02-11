@@ -450,23 +450,47 @@ void DynamicObject::SetVerticesBuffer() {
 
 void DynamicObject::UpdateHitboxes() {
 	if (mainHitbox != nullptr) {
-		for (int i = 0; i < 8; ++i)
-			mainHitbox->transformVertices[i] = model * glm::vec4(mainHitbox->basicVertices[i],1.0f);
+		for (int i = 0; i < 8; ++i) {
+			mainHitbox->transformVertices[i] = model * glm::vec4(mainHitbox->basicVertices[i], 1.0f);
+			if (i < 6) mainHitbox->transformNormals[i] = model * glm::vec4(mainHitbox->basicNormals[i], 0.0f);
+		}
 	}
 
+	float mat[16];
+	//glm::vec3 nextPos, prevPos,nextNormal,prevNormal;
+	glm::mat4 nextJointMat, prevJointMat;
 	for (HitboxMap::iterator it = hitboxes.begin(); it != hitboxes.end(); ++it) {
-		float mat[16];
 		memcpy(mat, animationManager->GetJointsNextTransformMatrices() + it->second->jointIdx * 16, 16 * sizeof(float));
-		glm::mat4 nextJointMat = glm::make_mat4(mat);
+		nextJointMat = glm::make_mat4(mat);
 		memcpy(mat, animationManager->GetJointsPreviousTransformMatrices() + it->second->jointIdx * 16, 16 * sizeof(float));
-		glm::mat4 prevJointMat = glm::make_mat4(mat);
+		prevJointMat = glm::make_mat4(mat);
+
+		glm::mat4 hitboxTransformMat = model*(((1.0f - animationManager->GetInterpolationVal())*prevJointMat) + (animationManager->GetInterpolationVal()*nextJointMat));
 
 		for (int i = 0; i < 8; ++i) {
-			glm::vec4 nextPos, prevPos;
-			nextPos = nextJointMat * glm::vec4(it->second->basicVertices[i],1.0f);
-			prevPos = prevJointMat * glm::vec4(it->second->basicVertices[i],1.0f);
-			it->second->transformVertices[i] = prevPos + animationManager->GetInterpolationVal()*(nextPos - prevPos);
-			it->second->transformVertices[i] = model * glm::vec4(it->second->transformVertices[i],1.0f);
+			//nextPos = nextJointMat * glm::vec4(it->second->basicVertices[i],1.0f);
+			//prevPos = prevJointMat * glm::vec4(it->second->basicVertices[i],1.0f);
+			//it->second->transformVertices[i] = prevPos + animationManager->GetInterpolationVal()*(nextPos - prevPos);
+			//it->second->transformVertices[i] = model * glm::vec4(it->second->transformVertices[i],1.0f);
+
+			//it->second->transformVertices[i] = 
+			//	model * ((((1.0f - animationManager->GetInterpolationVal())*prevJointMat) + (animationManager->GetInterpolationVal()*nextJointMat)) *
+			//		glm::vec4(it->second->basicVertices[i],1.0f));
+			
+			it->second->transformVertices[i] = hitboxTransformMat*glm::vec4(it->second->basicVertices[i], 1.0f);
+
+			//if (i < 6) {
+			//	nextNormal = nextJointMat * glm::vec4(it->second->basicNormals[i], 0.0f);
+			//	prevNormal = prevJointMat * glm::vec4(it->second->basicNormals[i], 0.0f);
+			//	it->second->transformNormals[i] = prevNormal + animationManager->GetInterpolationVal()*(nextNormal - prevNormal);
+			//	it->second->transformNormals[i] = model * glm::vec4(it->second->transformNormals[i], 0.0f);
+			//	it->second->transformNormals[i] = glm::normalize(it->second->transformNormals[i]);
+			//}
+			//if (i < 6)
+			//	it->second->transformNormals[i] = 
+			//	model * ((((1.0f - animationManager->GetInterpolationVal())*prevJointMat) + (animationManager->GetInterpolationVal()*nextJointMat)) *
+			//		glm::vec4(it->second->basicNormals[i], 0.0f));
+			if (i < 6) it->second->transformNormals[i] = hitboxTransformMat*glm::vec4(it->second->basicNormals[i], 0.0f);
 		}
 	}
 }

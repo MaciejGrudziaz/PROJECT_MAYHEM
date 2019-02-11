@@ -36,11 +36,17 @@ void ModulesManager::Process() {
 
 		//for (unsigned i = 0; i < AutoList<Character>::GetCount(); ++i)
 		bool col = false;
-		col=CollisionDetection::CheckCollision(AutoList<BasicCharacter>::GetObj(0)->GetModel()->GetObject_(0)->GetMainHitbox(), 
-			AutoList<BasicCharacter>::GetObj(1)->GetModel()->GetObject_(0)->GetMainHitbox());
-		if (col == true)
-			std::cout << "Collision!\r";
-		else std::cout <<"          \r";
+		std::vector<glm::vec3> collisionNormals;
+
+		col=CollisionDetection::CheckCollision(*(AutoList<BasicCharacter>::GetObj(0)->GetModel()->GetObject_(0)->GetMainHitbox()), 
+			*(AutoList<BasicCharacter>::GetObj(1)->GetModel()->GetObject_(0)->GetMainHitbox()));
+		if (col == true) {
+			CollisionDetection::GetCollisionNormals(*(AutoList<BasicCharacter>::GetObj(0)->GetModel()->GetObject_(0)->GetMainHitbox()),
+				*(AutoList<BasicCharacter>::GetObj(1)->GetModel()->GetObject_(0)->GetMainHitbox()), collisionNormals);
+			std::cout << "Collision! normals:\n";
+			for (int i = 0; i < collisionNormals.size(); ++i)
+				std::cout << "n=[" << collisionNormals[i].x << ", " << collisionNormals[i].y << ", " << collisionNormals[i].z << "]\n";
+		}
 		
 	}
 
