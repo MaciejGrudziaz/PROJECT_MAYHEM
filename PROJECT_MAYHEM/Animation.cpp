@@ -69,7 +69,7 @@ void AnimationManager::Start(int animationIndex_, int startFrame, int stopFrame,
 	if (stopFrame == Animation::CURR_FRAME) stopFrame = animations[animationIndex_]->currentFrame;
 	if (startFrame == Animation::CURR_FRAME) startFrame = animations[animationIndex_]->currentFrame;
 
-	assert(startFrame >= 0 && startFrame < animations[animationIndex_]->frameCount - 1);
+	assert(startFrame >= 0 && startFrame < animations[animationIndex_]->frameCount);
 	assert(stopFrame >= 0 && stopFrame < animations[animationIndex_]->frameCount);
 	assert(iterations > 0);
 

@@ -168,6 +168,94 @@ bool Character::IsObjectDynamic(int index) {
 	}
 }
 
+int Character::GetInputPacketsCount() {
+	int count;
+	inPacketsMutex.lock();
+	count = inPackets.PacketsCount();
+	inPacketsMutex.unlock();
+	return count;
+}
+
+bool Character::InputPacketsAvailable() {
+	bool available;
+	inPacketsMutex.lock();
+	available = inPackets.PacketsAvailable();
+	inPacketsMutex.unlock();
+	return available;
+}
+
+Packet* Character::PopInputPacket() {
+	Packet* outPacket;
+	inPacketsMutex.lock();
+	outPacket = inPackets.GetPacket();
+	inPacketsMutex.unlock();
+	return outPacket;
+}
+
+bool Character::PushInputPacket(Packet* packet) {
+	bool success = false;
+	inPacketsMutex.lock();
+	if (inPackets.PacketsCount() < Character::maxPacketsCount) {
+		inPackets.LoadPacket(packet);
+		success = true;
+	}
+	inPacketsMutex.unlock();
+
+	return success;
+}
+
+void Character::GetAllInputPackets(std::vector<Packet*>& packets) {
+	inPacketsMutex.lock();
+	while (inPackets.PacketsAvailable()) {
+		packets.push_back(inPackets.GetPacket());
+	}
+	inPacketsMutex.unlock();
+}
+
+int Character::GetOutputPacketsCount() {
+	int count;
+	outPacketsMutex.lock();
+	count = outPackets.PacketsCount();
+	outPacketsMutex.unlock();
+	return count;
+}
+
+bool Character::OutputPacketsAvailable() {
+	bool available;
+	outPacketsMutex.lock();
+	available = outPackets.PacketsAvailable();
+	outPacketsMutex.unlock();
+	return available;
+}
+
+Packet* Character::PopOutputPacket() {
+	Packet* packet;
+	outPacketsMutex.lock();
+	packet = outPackets.GetPacket();
+	outPacketsMutex.unlock();
+	return packet;
+}
+
+bool Character::PushOutputPacket(Packet* packet) {
+	bool success = false;
+	outPacketsMutex.lock();
+	if (outPackets.PacketsCount() < Character::maxPacketsCount) {
+		outPackets.LoadPacket(packet);
+		success = true;
+	}
+	outPacketsMutex.unlock();
+
+	return success;
+}
+
+void Character::GetAllOutputPackets(std::vector<Packet*>& packets) {
+	outPacketsMutex.lock();
+	while (outPackets.PacketsAvailable()) {
+		packets.push_back(outPackets.GetPacket());
+	}
+	outPacketsMutex.unlock();
+}
+
 void Character::Init() {
 	for (unsigned i = 0; i < model.GetObjectsCount(); ++i) {
 		model.GetObject_(i)->Init();

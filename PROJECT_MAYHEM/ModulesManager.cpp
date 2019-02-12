@@ -20,6 +20,8 @@ void ModulesManager::Init() {
 	AutoList<BasicCharacter>::GetObj(0)->GetModel()->GetObject_(0)->Animation_SetSpeed("WALK_SIDE", 3.2f);
 
 	StartFrameTimeMeasurment();
+
+	PhysicsModule::Launch();
 }
 
 void ModulesManager::Process() {
@@ -32,23 +34,10 @@ void ModulesManager::Process() {
 		InputModule::Process();
 
 		for (unsigned i = 0; i < AutoList<Character>::GetCount(); ++i)
-			AutoList<Character>::GetObj(i)->Update();
-
-		//for (unsigned i = 0; i < AutoList<Character>::GetCount(); ++i)
-		bool col = false;
-		std::vector<glm::vec3> collisionNormals;
-
-		col=CollisionDetection::CheckCollision(*(AutoList<BasicCharacter>::GetObj(0)->GetModel()->GetObject_(0)->GetMainHitbox()), 
-			*(AutoList<BasicCharacter>::GetObj(1)->GetModel()->GetObject_(0)->GetMainHitbox()));
-		if (col == true) {
-			CollisionDetection::GetCollisionNormals(*(AutoList<BasicCharacter>::GetObj(0)->GetModel()->GetObject_(0)->GetMainHitbox()),
-				*(AutoList<BasicCharacter>::GetObj(1)->GetModel()->GetObject_(0)->GetMainHitbox()), collisionNormals);
-			std::cout << "Collision! normals:\n";
-			for (int i = 0; i < collisionNormals.size(); ++i)
-				std::cout << "n=[" << collisionNormals[i].x << ", " << collisionNormals[i].y << ", " << collisionNormals[i].z << "]\n";
-		}
-		
+			AutoList<Character>::GetObj(i)->Update();		
 	}
+
+	if (PhysicsModule::start == false) PhysicsModule::start = true;
 
 	Graphics::Process();
 }
@@ -56,6 +45,7 @@ void ModulesManager::Process() {
 void ModulesManager::End() {
 	Graphics::End();
 	InputModule::End();
+	PhysicsModule::End();
 
 	ResourcesManager::Clear();
 

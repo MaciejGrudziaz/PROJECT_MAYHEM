@@ -154,6 +154,7 @@
     <ClInclude Include="ObjectShaderManager.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="PacketManager.h" />
+    <ClInclude Include="PhysicsModule.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="ResourcesManager.h" />
     <ClInclude Include="Shader.h" />
@@ -180,6 +181,7 @@
     <ClCompile Include="ModulesManager.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectShaderManager.cpp" />
+    <ClCompile Include="PhysicsModule.cpp" />
     <ClCompile Include="ResourcesManager.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="BasicCharacter.cpp" />

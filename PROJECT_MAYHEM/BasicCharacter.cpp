@@ -25,8 +25,8 @@ void BasicCharacter::ProcessPackets() {
 	glm::vec3 rotUpdate(0.0f);
 	Packet* p;
 
-	while (GetInputPacketManager()->PacketsAvailable()) {
-		p = GetInputPacketManager()->GetPacket();
+	while (InputPacketsAvailable()/*GetInputPacketManager()->PacketsAvailable()*/) {
+		p = PopInputPacket();/*GetInputPacketManager()->GetPacket();*/
 		if (p->group_ == 0) {
 			if (p->id_ == 1) dir1 += 1;
 			else if (p->id_ == 2) dir1 -= 1;

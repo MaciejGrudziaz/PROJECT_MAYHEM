@@ -6,6 +6,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/transform.hpp>
 #include <boost/chrono.hpp>
+#include <boost/thread/mutex.hpp>
 #include "Shader.h"
 //#include "ResourcesManager.h"
 #include "Model.h"
@@ -17,6 +18,10 @@
 class Character:public AutoList<Character> {
 	PacketManager inPackets;
 	PacketManager outPackets;
+
+	boost::mutex inPacketsMutex;
+	boost::mutex outPacketsMutex;
+	static const int maxPacketsCount = 100;
 
 	std::string name;
 	glm::vec3 position;
@@ -102,8 +107,17 @@ public:
 
 	bool IsObjectDynamic(int index);
 
-	PacketManager* GetInputPacketManager() { return &inPackets; }
-	PacketManager* GetOutputPacketManager() { return &outPackets; }
+	int GetInputPacketsCount();
+	bool InputPacketsAvailable();
+	Packet* PopInputPacket();
+	bool PushInputPacket(Packet* packet);
+	void GetAllInputPackets(std::vector<Packet*>& packets);
+
+	int GetOutputPacketsCount();
+	bool OutputPacketsAvailable();
+	Packet* PopOutputPacket();
+	bool PushOutputPacket(Packet* packet);
+	void GetAllOutputPackets(std::vector<Packet*>& packets);
 
 	void Transform(const glm::mat4& transform_) { transform = transform_; transformUpdate = true; }
 

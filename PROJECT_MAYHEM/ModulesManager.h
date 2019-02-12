@@ -5,6 +5,7 @@
 #include "ResourcesManager.h"
 #include "CONST.h"
 #include "CollisionDetection.h"
+#include "PhysicsModule.h"
 #include <iostream>
 
 class ModulesManager {

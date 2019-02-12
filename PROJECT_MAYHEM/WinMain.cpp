@@ -9,7 +9,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInsatnce, LPSTR lpCmdLine
 
 	ConsoleInterface::Init();
 	SetForegroundWindow(WinAPIwindowManager::GetMainWindow()->GetHWND());
-	
+
 	bool done = false;
 	while (!done) {
 		PeekMessage(WinAPIwindowManager::GetMSG(), NULL, 0,0,PM_REMOVE);

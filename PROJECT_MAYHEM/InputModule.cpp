@@ -33,15 +33,17 @@ void InputModule::Process() {
 		}
 	}
 
-	if (AutoList<Player>::GetCount() > 0)
-		SendPackets(AutoList<Player>::GetObj(0)->GetInputPacketManager());
+	if (AutoList<Player>::GetCount() > 0) {
+		while (outPackets.PacketsAvailable()) 
+			AutoList<Player>::GetObj(0)->PushInputPacket(outPackets.GetPacket());
+	}
 }
 
 void InputModule::End() {
 	DIRECTINPUT::Shutdown();
 }
 
-void InputModule::SendPackets(PacketManager* destination) {
-	while (outPackets.PacketsAvailable())
-		destination->LoadPacket(outPackets.GetPacket());
-}
+//void InputModule::SendPackets(PacketManager* destination) {
+//	while (outPackets.PacketsAvailable())
+//		destination->LoadPacket(outPackets.GetPacket());
+//}
