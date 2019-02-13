@@ -108,6 +108,7 @@ class CollisionDetection {
 	
 	static bool IfPointInRectangle(glm::vec3 rect1, glm::vec3 rect2, glm::vec3 rect3, glm::vec3 rect4, glm::vec3 checkPt);
 	static bool IfPointInHitbox(const Hitbox& hitbox, glm::vec3 pt);
+	static bool IfPointInHitbox(const Surface surfaces[], glm::vec3 pt);
 
 	static void GetCollisonNormals_GetCandidates(const Hitbox& model1, const Hitbox& model2, std::map<int,Surface>& surfaceCandidates);
 	static void GetCollisionNormals_SortCandidates(const Hitbox& model1, const Hitbox& model2, std::map<int, Surface>& surfaceCandidates, std::vector<glm::vec3>& collisionNormals);

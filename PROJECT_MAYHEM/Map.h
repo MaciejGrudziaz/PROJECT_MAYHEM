@@ -26,6 +26,7 @@ public:
 	Map(const char* name): Character(name) {}
 
 	bool SetGroundObject(const char* name);
+	Object* GetGroundObject(int idx) { if (idx >= 0 && idx < ground.size()) return ground[idx]; else return nullptr; }
 	void TransformObjectsVertices();
 
 

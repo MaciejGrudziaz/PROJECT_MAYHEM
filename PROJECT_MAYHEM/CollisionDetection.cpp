@@ -541,6 +541,13 @@ bool CollisionDetection::IfPointInHitbox(const Hitbox& hitbox, glm::vec3 pt) {
 	return true;
 }
 
+bool CollisionDetection::IfPointInHitbox(const Surface surfaces[], glm::vec3 pt) {
+	for (int i = 0; i < 6; ++i)
+		if (GetParam_T_SurfacePointProjection(surfaces[i], pt) < 0) return false;
+
+	return true;
+}
+
 void CollisionDetection::GetCollisonNormals_GetCandidates(const Hitbox& model1, const Hitbox& model2, std::map<int, Surface>& surfaceCandidates) {
 	glm::vec3 midPt(0.0f);
 	Surface model2_s[6];
@@ -582,6 +589,14 @@ void CollisionDetection::GetCollisionNormals_SortCandidates(const Hitbox& model1
 		model1_midPt += model1.transformVertices[i];
 	model1_midPt /= 8.0f;
 
+	Surface model1_surafaces[6];
+	model1_surafaces[0] = Surface(model1.transformNormals[0], model1.transformVertices[0]);
+	model1_surafaces[1] = Surface(model1.transformNormals[1], model1.transformVertices[0]);
+	model1_surafaces[2] = Surface(model1.transformNormals[2], model1.transformVertices[1]);
+	model1_surafaces[3] = Surface(model1.transformNormals[3], model1.transformVertices[2]);
+	model1_surafaces[4] = Surface(model1.transformNormals[4], model1.transformVertices[3]);
+	model1_surafaces[5] = Surface(model1.transformNormals[5], model1.transformVertices[4]);
+
 	for (std::map<int, Surface>::iterator it = surfaceCandidates.begin(); it != surfaceCandidates.end(); ++it) {
 		GetCollisionNormals_SortCandidates_GetSurfaceParams(model2, it->first, &surfaceMidPt, &surfVec1, &surfVec2);
 		surfaceModel1MidPtProj = GetSurfacePointProjection(it->second, model1_midPt);
@@ -589,7 +604,8 @@ void CollisionDetection::GetCollisionNormals_SortCandidates(const Hitbox& model1
 		GetCollisionNormals_SortCandidates_GenerateTestPoints(surfaceMidPt, surfVec1, surfVec2, surfaceModel1MidPtProj, testPointsCount, testPoints);
 
 		for (int i = 0; i < testPoints.size(); ++i) {
-			if (IfPointInHitbox(model1, testPoints[i] + (model1_midPtSurfaceDist / 2.0f)*it->second.n) == true) {
+			//if (IfPointInHitbox(model1, testPoints[i] + (model1_midPtSurfaceDist / 2.0f)*it->second.n) == true) {
+			if(IfPointInHitbox(model1_surafaces, testPoints[i] + (model1_midPtSurfaceDist / 2.0f)*it->second.n)==true){
 				collisionNormals.push_back(it->second.n);
 				break;
 			}

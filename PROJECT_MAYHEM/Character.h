@@ -19,8 +19,8 @@ class Character:public AutoList<Character> {
 	PacketManager inPackets;
 	PacketManager outPackets;
 
-	boost::mutex inPacketsMutex;
-	boost::mutex outPacketsMutex;
+	boost::mutex inPacketsMutex, inPacketsPriorityMutex;
+	boost::mutex outPacketsMutex, outPacketsPriorityMutex;
 	static const int maxPacketsCount = 100;
 
 	std::string name;
@@ -42,6 +42,19 @@ class Character:public AutoList<Character> {
 	void WriteErrorToFile(std::string message);
 
 	//void ProcessInputPackets();
+
+protected:
+	int GetInputPacketsCount_priority();
+	bool InputPacketsAvailable_priority();
+	Packet* PopInputPacket_priority();
+	bool PushInputPacket_priority(Packet* packet);
+	void GetAllInputPackets_priority(std::vector<Packet*>& packets);
+
+	int GetOutputPacketsCount_priority();
+	bool OutputPacketsAvailable_priority();
+	Packet* PopOutputPacket_priority();
+	bool PushOutputPacket_priority(Packet* packet);
+	void GetAllOutputPackets_priority(std::vector<Packet*>& packets);
 
 public:
 	Character():position(glm::vec3(0.0f)),name("Character"),rotations(glm::vec3(0.0f)),transformUpdate(false), 

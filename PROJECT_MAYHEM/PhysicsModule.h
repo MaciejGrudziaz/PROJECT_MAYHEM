@@ -3,9 +3,12 @@
 #include "CollisionDetection.h"
 #include "Player.h"
 #include "Map.h"
+#include <boost/chrono.hpp>
 
 class PhysicsModule {
 	static boost::thread physicsThread;
+	static const int freq;
+	static const int simTime; //us
 
 public:
 	static bool start;
@@ -21,3 +24,9 @@ public:
 
 	~PhysicsModule() {}
 };
+
+//-----------------------------------------------------------------------------
+//-----------------------------------PACKETS-----------------------------------
+//-----------------------------------------------------------------------------
+
+

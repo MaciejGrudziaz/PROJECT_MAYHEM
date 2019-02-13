@@ -183,7 +183,7 @@ class StaticObject :public Object {
 	bool updateHitbox;
 
 public:
-	StaticObject():updateHitbox(true) { shaderManager = new StaticObjectShaderManager(); }
+	StaticObject() :updateHitbox(true) { shaderManager = new StaticObjectShaderManager(); ShowAllHitboxes(); }
 
 	void Init();
 

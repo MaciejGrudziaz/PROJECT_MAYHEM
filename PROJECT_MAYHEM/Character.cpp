@@ -171,15 +171,19 @@ bool Character::IsObjectDynamic(int index) {
 int Character::GetInputPacketsCount() {
 	int count;
 	inPacketsMutex.lock();
+	inPacketsPriorityMutex.lock();
 	count = inPackets.PacketsCount();
-	inPacketsMutex.unlock();
+	inPacketsPriorityMutex.unlock();
+	inPacketsMutex.lock();
 	return count;
 }
 
 bool Character::InputPacketsAvailable() {
 	bool available;
 	inPacketsMutex.lock();
+	inPacketsPriorityMutex.lock();
 	available = inPackets.PacketsAvailable();
+	inPacketsPriorityMutex.unlock();
 	inPacketsMutex.unlock();
 	return available;
 }
@@ -187,7 +191,9 @@ bool Character::InputPacketsAvailable() {
 Packet* Character::PopInputPacket() {
 	Packet* outPacket;
 	inPacketsMutex.lock();
+	inPacketsPriorityMutex.lock();
 	outPacket = inPackets.GetPacket();
+	inPacketsPriorityMutex.unlock();
 	inPacketsMutex.unlock();
 	return outPacket;
 }
@@ -195,10 +201,13 @@ Packet* Character::PopInputPacket() {
 bool Character::PushInputPacket(Packet* packet) {
 	bool success = false;
 	inPacketsMutex.lock();
+	inPacketsPriorityMutex.lock();
 	if (inPackets.PacketsCount() < Character::maxPacketsCount) {
 		inPackets.LoadPacket(packet);
 		success = true;
 	}
+	else delete packet;
+	inPacketsPriorityMutex.unlock();
 	inPacketsMutex.unlock();
 
 	return success;
@@ -206,16 +215,20 @@ bool Character::PushInputPacket(Packet* packet) {
 
 void Character::GetAllInputPackets(std::vector<Packet*>& packets) {
 	inPacketsMutex.lock();
+	inPacketsPriorityMutex.lock();
 	while (inPackets.PacketsAvailable()) {
 		packets.push_back(inPackets.GetPacket());
 	}
+	inPacketsPriorityMutex.unlock();
 	inPacketsMutex.unlock();
 }
 
 int Character::GetOutputPacketsCount() {
 	int count;
 	outPacketsMutex.lock();
+	outPacketsPriorityMutex.lock();
 	count = outPackets.PacketsCount();
+	outPacketsPriorityMutex.unlock();
 	outPacketsMutex.unlock();
 	return count;
 }
@@ -223,7 +236,9 @@ int Character::GetOutputPacketsCount() {
 bool Character::OutputPacketsAvailable() {
 	bool available;
 	outPacketsMutex.lock();
+	outPacketsPriorityMutex.lock();
 	available = outPackets.PacketsAvailable();
+	outPacketsPriorityMutex.unlock();
 	outPacketsMutex.unlock();
 	return available;
 }
@@ -231,7 +246,9 @@ bool Character::OutputPacketsAvailable() {
 Packet* Character::PopOutputPacket() {
 	Packet* packet;
 	outPacketsMutex.lock();
+	outPacketsPriorityMutex.lock();
 	packet = outPackets.GetPacket();
+	outPacketsPriorityMutex.unlock();
 	outPacketsMutex.unlock();
 	return packet;
 }
@@ -239,10 +256,12 @@ Packet* Character::PopOutputPacket() {
 bool Character::PushOutputPacket(Packet* packet) {
 	bool success = false;
 	outPacketsMutex.lock();
+	outPacketsPriorityMutex.lock();
 	if (outPackets.PacketsCount() < Character::maxPacketsCount) {
 		outPackets.LoadPacket(packet);
 		success = true;
 	}
+	outPacketsPriorityMutex.unlock();
 	outPacketsMutex.unlock();
 
 	return success;
@@ -250,9 +269,11 @@ bool Character::PushOutputPacket(Packet* packet) {
 
 void Character::GetAllOutputPackets(std::vector<Packet*>& packets) {
 	outPacketsMutex.lock();
+	outPacketsPriorityMutex.lock();
 	while (outPackets.PacketsAvailable()) {
 		packets.push_back(outPackets.GetPacket());
 	}
+	outPacketsPriorityMutex.unlock();
 	outPacketsMutex.unlock();
 }
 
@@ -428,3 +449,94 @@ void Character::ProcessInputPackets() {
 	}
 }
 */
+
+int Character::GetInputPacketsCount_priority() {
+	int count;
+	inPacketsPriorityMutex.lock();
+	count = inPackets.PacketsCount();
+	inPacketsPriorityMutex.unlock();
+	return count;
+}
+
+bool Character::InputPacketsAvailable_priority() {
+	bool available;
+	inPacketsPriorityMutex.lock();
+	available = inPackets.PacketsAvailable();
+	inPacketsPriorityMutex.unlock();
+	return available;
+}
+
+Packet* Character::PopInputPacket_priority() {
+	Packet* outPacket;
+	inPacketsPriorityMutex.lock();
+	outPacket = inPackets.GetPacket();
+	inPacketsPriorityMutex.unlock();
+	return outPacket;
+}
+
+bool Character::PushInputPacket_priority(Packet* packet) {
+	bool success = false;
+	inPacketsPriorityMutex.lock();
+	if (inPackets.PacketsCount() < Character::maxPacketsCount) {
+		inPackets.LoadPacket(packet);
+		success = true;
+	}
+	else delete packet;
+
+	inPacketsPriorityMutex.unlock();
+
+	return success;
+}
+
+void Character::GetAllInputPackets_priority(std::vector<Packet*>& packets) {
+	inPacketsPriorityMutex.lock();
+	while (inPackets.PacketsAvailable()) {
+		packets.push_back(inPackets.GetPacket());
+	}
+	inPacketsPriorityMutex.unlock();
+}
+
+int Character::GetOutputPacketsCount_priority() {
+	int count;
+	outPacketsPriorityMutex.lock();
+	count = outPackets.PacketsCount();
+	outPacketsPriorityMutex.unlock();
+	return count;
+}
+
+bool Character::OutputPacketsAvailable_priority() {
+	bool available;
+	outPacketsPriorityMutex.lock();
+	available = outPackets.PacketsAvailable();
+	outPacketsPriorityMutex.unlock();
+	return available;
+}
+
+Packet* Character::PopOutputPacket_priority() {
+	Packet* packet;
+	outPacketsPriorityMutex.lock();
+	packet = outPackets.GetPacket();
+	outPacketsPriorityMutex.unlock();
+	return packet;
+}
+
+bool Character::PushOutputPacket_priority(Packet* packet) {
+	bool success = false;
+	outPacketsPriorityMutex.lock();
+	if (outPackets.PacketsCount() < Character::maxPacketsCount) {
+		outPackets.LoadPacket(packet);
+		success = true;
+	}
+	outPacketsPriorityMutex.unlock();
+
+	return success;
+}
+
+void Character::GetAllOutputPackets_priority(std::vector<Packet*>& packets) {
+	outPacketsPriorityMutex.lock();
+	while (outPackets.PacketsAvailable()) {
+		packets.push_back(outPackets.GetPacket());
+	}
+	outPacketsPriorityMutex.unlock();
+}
+

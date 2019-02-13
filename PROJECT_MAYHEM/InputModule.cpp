@@ -28,6 +28,9 @@ void InputModule::Process() {
 			int val = DIRECTINPUT::GetMouseMovevementAction(f->GetKeyCode());
 			if (val != 0) {
 				f->pData = new MouseMoveData(val);
+				//PacketData* data = new PacketData();;
+				//data->Data(new int(val));
+				//f->pData = data;
 				outPackets.LoadPacket(f->Process());
 			}
 		}

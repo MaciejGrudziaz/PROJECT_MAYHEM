@@ -24,33 +24,105 @@ void BasicCharacter::ProcessPackets() {
 	float rotSpeed = GetRotationSpeed();
 	glm::vec3 rotUpdate(0.0f);
 	Packet* p;
+	std::vector<Packet*> inputPackets;
 
-	while (InputPacketsAvailable()/*GetInputPacketManager()->PacketsAvailable()*/) {
-		p = PopInputPacket();/*GetInputPacketManager()->GetPacket();*/
-		if (p->group_ == 0) {
-			if (p->id_ == 1) dir1 += 1;
-			else if (p->id_ == 2) dir1 -= 1;
-			else if (p->id_ == 3) dir2 += 1;
-			else if (p->id_ == 4) dir2 -= 1;
-		}
-		else if (p->group_ == 1) {
-			int moveVal = static_cast<MouseMoveData*>(p->data)->moveVal;
-			
-			if (p->id_ == 1)
-				rotUpdate.x += (rotSpeed*CONSTVAL::targetFrameTime*moveVal);
-			else if (p->id_ == 2)
-				rotUpdate.x -= (rotSpeed*CONSTVAL::targetFrameTime*moveVal);
-			else if (p->id_ == 3)
-				rotUpdate.y += (rotSpeed*CONSTVAL::targetFrameTime*moveVal);
-			else if (p->id_ == 4)
-				rotUpdate.y -= (rotSpeed*CONSTVAL::targetFrameTime*moveVal);
-		}
-		delete p;
+	GetAllInputPackets_priority(inputPackets);
+
+	for (int i = 0; i < inputPackets.size(); ++i) {
+		p = inputPackets[i];
+		if (p->class_ == 0) {
+			if (p->group_ == 0) {
+				if (p->id_ == 1) dir1 += 1;
+				else if (p->id_ == 2) dir1 -= 1;
+				else if (p->id_ == 3) dir2 += 1;
+				else if (p->id_ == 4) dir2 -= 1;
+			}
+			else if (p->group_ == 1) {
+				//int moveVal = static_cast<MouseMoveData*>(p->data)->moveVal;
+				int moveVal = p->GetData<MouseMoveData>()->moveVal;
+
+				if (p->id_ == 1)
+					rotUpdate.x += (rotSpeed*CONSTVAL::targetFrameTime*moveVal);
+				else if (p->id_ == 2)
+					rotUpdate.x -= (rotSpeed*CONSTVAL::targetFrameTime*moveVal);
+				else if (p->id_ == 3)
+					rotUpdate.y += (rotSpeed*CONSTVAL::targetFrameTime*moveVal);
+				else if (p->id_ == 4)
+					rotUpdate.y -= (rotSpeed*CONSTVAL::targetFrameTime*moveVal);
+			}
+			delete p;
+			p = nullptr;
+		}		
 	}
+
+	glm::vec3 changeVec(0.0f);
+	std::vector<glm::vec3> *normalsVec;
+	for (int i = 0; i < inputPackets.size(); ++i) {
+		p = inputPackets[i];
+		if (p != nullptr) {
+			if (p->class_ == 1) {
+				if (p->id_ == 0) {
+					normalsVec = &(p->GetData<CollisionData>()->normals);
+					for (int j = 0; j < normalsVec->size(); ++j)
+						changeVec += normalsVec->operator[](j);
+				}
+				delete p;
+				p = nullptr;
+			}
+		}
+	}
+
+	//for (int i = 0; i < inputPackets.size(); ++i)
+	//	if (inputPackets[i] != nullptr) delete inputPackets[i];
+
+	//while (InputPacketsAvailable()) {
+	//	p = PopInputPacket();
+	//	if (p->class_ == 0) {
+	//		if (p->group_ == 0) {
+	//			if (p->id_ == 1) dir1 += 1;
+	//			else if (p->id_ == 2) dir1 -= 1;
+	//			else if (p->id_ == 3) dir2 += 1;
+	//			else if (p->id_ == 4) dir2 -= 1;
+	//		}
+	//		else if (p->group_ == 1) {
+	//			//int moveVal = static_cast<MouseMoveData*>(p->data)->moveVal;
+	//			int moveVal = p->GetData<MouseMoveData>()->moveVal;
+
+	//			if (p->id_ == 1)
+	//				rotUpdate.x += (rotSpeed*CONSTVAL::targetFrameTime*moveVal);
+	//			else if (p->id_ == 2)
+	//				rotUpdate.x -= (rotSpeed*CONSTVAL::targetFrameTime*moveVal);
+	//			else if (p->id_ == 3)
+	//				rotUpdate.y += (rotSpeed*CONSTVAL::targetFrameTime*moveVal);
+	//			else if (p->id_ == 4)
+	//				rotUpdate.y -= (rotSpeed*CONSTVAL::targetFrameTime*moveVal);
+	//		}
+	//	}
+	//	else if (p->class_ == 1) {
+	//		
+	//	}
+	//	delete p;
+	//}
 
 	UpdateRotation(rotUpdate);
 
 	MoveAction(dir1, dir2);
+
+	glm::vec3 moveVec= nextPos - prevPos;;
+	float length;
+	if (changeVec != glm::vec3(0.0f) && moveVec!=glm::vec3(0.0f)) {
+		changeVec = glm::normalize(changeVec);
+		moveVec = nextPos - prevPos;
+		length=glm::length(moveVec);
+		moveVec = glm::normalize(moveVec);
+		moveVec = moveVec + changeVec;
+		moveVec = length * glm::normalize(moveVec);
+		nextPos = prevPos + moveVec;
+	}
+	//moveVec = nextPos - prevPos;
+	//moveVec = GetSpeed()*glm::normalize(nextPos*prevPos);
+	//nextPos = prevPos + moveVec;
+	SetPosition(nextPos);
 
 	glm::quat q, qx, qy;
 	glm::mat3 rot;
@@ -182,13 +254,17 @@ void BasicCharacter::MoveAction(int dir1, int dir2) {
 	glm::vec3 pos = GetPosition();
 	glm::vec3 lookVec = GetLookAtVec();
 
+	prevPos = pos;
+
 	if (dir1 != 0 && dir2 != 0) speed /= 2.0f;
 
-	if(dir1==1) pos += (speed*CONSTVAL::targetFrameTime)*glm::vec3(lookVec.x, 0.0f, lookVec.z);
-	else if(dir1==-1) pos -= (speed*CONSTVAL::targetFrameTime)*glm::vec3(lookVec.x, 0.0f, lookVec.z);
+	if(dir1==1) pos += (speed*CONSTVAL::targetFrameTime)*glm::normalize(glm::vec3(lookVec.x, 0.0f, lookVec.z));
+	else if(dir1==-1) pos -= (speed*CONSTVAL::targetFrameTime)*glm::normalize(glm::vec3(lookVec.x, 0.0f, lookVec.z));
 
-	if(dir2==1) pos += (speed*CONSTVAL::targetFrameTime)*(glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(lookVec.x, 0.0f, lookVec.z)));
-	else if(dir2==-1) pos -= (speed*CONSTVAL::targetFrameTime)*(glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(lookVec.x, 0.0f, lookVec.z)));
+	if(dir2==1) pos += (speed*CONSTVAL::targetFrameTime)*(glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), glm::normalize(glm::vec3(lookVec.x, 0.0f, lookVec.z))));
+	else if(dir2==-1) pos -= (speed*CONSTVAL::targetFrameTime)*(glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), glm::normalize(glm::vec3(lookVec.x, 0.0f, lookVec.z))));
 
-	SetPosition(pos);
+	nextPos = pos;
+
+	//SetPosition(pos);
 }

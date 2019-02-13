@@ -48,4 +48,6 @@ void Map::TransformObjectsVertices() {
 		}
 		transformedVert->midVert /= static_cast<float>(transformedVert->vertices.size());
 	}
+
+	GetModel()->Update();
 }

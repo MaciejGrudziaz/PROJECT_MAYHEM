@@ -10,6 +10,8 @@ class BasicCharacter :public Character, public AutoList<BasicCharacter> {
 	typedef std::map<const char*,int> AnimNameMap;
 	AnimNameMap moveAnimNames;
 
+	glm::vec3 prevPos, nextPos;
+
 public:
 	BasicCharacter() :Character() {}
 
