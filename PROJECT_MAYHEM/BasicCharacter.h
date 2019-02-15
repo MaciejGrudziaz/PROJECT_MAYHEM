@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 #include "Character.h"
 #include "Camera.h"
 
@@ -11,9 +12,10 @@ class BasicCharacter :public Character, public AutoList<BasicCharacter> {
 	AnimNameMap moveAnimNames;
 
 	glm::vec3 prevPos, nextPos;
+	glm::vec3 freeForceVec;
 
 public:
-	BasicCharacter() :Character() {}
+	BasicCharacter() :Character(),freeForceVec(glm::vec3(0.0f)) {}
 
 	BasicCharacter(const char* name) :Character(name) {}
 

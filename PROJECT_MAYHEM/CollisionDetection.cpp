@@ -525,6 +525,27 @@ bool CollisionDetection::IfPointInRectangle(glm::vec3 rect1, glm::vec3 rect2, gl
 	return true;
 }
 
+bool CollisionDetection::IfPointInTriangle(glm::vec3 tr1, glm::vec3 tr2, glm::vec3 tr3, glm::vec3 checkPt) {
+	Surface s[3];
+	glm::vec3 n;
+	glm::vec3 trNorm;
+
+	trNorm = glm::cross((tr2 - tr1), (tr3 - tr1));
+
+	n = glm::cross((tr2 - tr1), trNorm);
+	s[0] = Surface(n, tr1);
+	n = glm::cross((tr3 - tr2), trNorm);
+	s[1] = Surface(n, tr2);
+	n = glm::cross((tr1 - tr3), trNorm);
+	s[2] = Surface(n, tr3);
+
+	for (int i = 0; i < 3; ++i) {
+		if (GetParam_T_SurfacePointProjection(s[i], checkPt) < 0) return false;
+	}
+
+	return true;
+}
+
 bool CollisionDetection::IfPointInHitbox(const Hitbox& hitbox, glm::vec3 pt) {
 	Surface s[6];
 

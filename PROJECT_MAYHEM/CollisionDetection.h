@@ -34,17 +34,26 @@ struct ModelCollision {
 typedef std::vector<std::pair<glm::vec3, unsigned int>> CollisionNormals;
 
 class CollisionDetection {
+public:
 	struct Surface {
 		float A, B, C, D;
 		glm::vec3 n;
 
 		Surface() :A(0.0f), B(0.0f), C(0.0f), D(0.0f),n(glm::vec3(0.0f)) {}
-		Surface(glm::vec3 n, glm::vec3 pt) {
+		Surface(const glm::vec3& n, const glm::vec3& pt) {
 			this->n = n;
 			A = n.x;
 			B = n.y;
 			C = n.z;
 			D = -(A*pt.x + B * pt.y + C * pt.z);
+		}
+		Surface(const glm::vec3& pt1, const glm::vec3& pt2, const glm::vec3& pt3) {
+			n = glm::cross((pt2 - pt1), (pt3 - pt1));
+			n = glm::normalize(n);
+			A = n.x;
+			B = n.y;
+			C = n.z;
+			D = -(A*pt1.x + B * pt1.y + C * pt1.z);
 		}
 
 		float operator[](int idx) {
@@ -66,8 +75,11 @@ class CollisionDetection {
 	struct Line {
 		glm::vec3 vec;
 		glm::vec3 pt;
-	};
 
+		Line() :vec(glm::vec3(0.0f)), pt(glm::vec3(0.0f)) {}
+		Line(const glm::vec3& vec_, const glm::vec3& pt_) : vec(vec_), pt(pt_) {}
+	};
+private:
 	//-----------------------------------------------------------------------------------------------------------------------------
 	//--------------------------------------------------------ALGORYTM GJK---------------------------------------------------------
 	//------------------------------------------------funckje tworz¹ce algorytm GJK------------------------------------------------
@@ -101,15 +113,6 @@ class CollisionDetection {
 	static glm::vec3 GJK_GetDirection_Iteration_3_ABD(std::vector<glm::vec3>&Simplex, glm::vec3 AB, glm::vec3 AD, glm::vec3 A0);
 	static glm::vec3 GJK_GetDirection_Iteration_3_ACD(std::vector<glm::vec3>&Simplex, glm::vec3 AD, glm::vec3 AC, glm::vec3 A0);
 
-	static glm::vec3 GetSurfaceCrossPoint(const Surface& surface, const Line& line);
-	static float GetParam_T_SurfaceCrossPoint(const Surface& surface, const Line& line);
-	static glm::vec3 GetSurfacePointProjection(const Surface& surface, glm::vec3 pt);
-	static float GetParam_T_SurfacePointProjection(const Surface& surface, glm::vec3 pt);
-	
-	static bool IfPointInRectangle(glm::vec3 rect1, glm::vec3 rect2, glm::vec3 rect3, glm::vec3 rect4, glm::vec3 checkPt);
-	static bool IfPointInHitbox(const Hitbox& hitbox, glm::vec3 pt);
-	static bool IfPointInHitbox(const Surface surfaces[], glm::vec3 pt);
-
 	static void GetCollisonNormals_GetCandidates(const Hitbox& model1, const Hitbox& model2, std::map<int,Surface>& surfaceCandidates);
 	static void GetCollisionNormals_SortCandidates(const Hitbox& model1, const Hitbox& model2, std::map<int, Surface>& surfaceCandidates, std::vector<glm::vec3>& collisionNormals);
 	static void GetCollisionNormals_SortCandidates_GetSurfaceParams(const Hitbox& model2, int idx, glm::vec3* outSurfaceMidPt, glm::vec3* outSurfaceVec1, glm::vec3* outSurfaceVec2);
@@ -121,4 +124,13 @@ public:
 	
 	static void GetCollisionNormals(const Hitbox& model1, const Hitbox& model2, std::vector<glm::vec3>& collisionNormals);
 
+	static glm::vec3 GetSurfaceCrossPoint(const Surface& surface, const Line& line);
+	static float GetParam_T_SurfaceCrossPoint(const Surface& surface, const Line& line);
+	static glm::vec3 GetSurfacePointProjection(const Surface& surface, glm::vec3 pt);
+	static float GetParam_T_SurfacePointProjection(const Surface& surface, glm::vec3 pt);
+
+	static bool IfPointInRectangle(glm::vec3 rect1, glm::vec3 rect2, glm::vec3 rect3, glm::vec3 rect4, glm::vec3 checkPt);
+	static bool IfPointInTriangle(glm::vec3 tr1, glm::vec3 tr2, glm::vec3 tr3, glm::vec3 checkPt);
+	static bool IfPointInHitbox(const Hitbox& hitbox, glm::vec3 pt);
+	static bool IfPointInHitbox(const Surface surfaces[], glm::vec3 pt);
 };

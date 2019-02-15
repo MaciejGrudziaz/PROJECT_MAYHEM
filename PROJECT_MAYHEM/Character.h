@@ -21,7 +21,7 @@ class Character:public AutoList<Character> {
 
 	boost::mutex inPacketsMutex, inPacketsPriorityMutex;
 	boost::mutex outPacketsMutex, outPacketsPriorityMutex;
-	static const int maxPacketsCount = 100;
+	static const int maxPacketsCount = 1000;
 
 	std::string name;
 	glm::vec3 position;

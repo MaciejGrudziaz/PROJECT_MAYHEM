@@ -39,7 +39,7 @@ void BasicCharacter::ProcessPackets() {
 			}
 			else if (p->group_ == 1) {
 				//int moveVal = static_cast<MouseMoveData*>(p->data)->moveVal;
-				int moveVal = p->GetData<MouseMoveData>()->moveVal;
+				int moveVal = p->GetData<SingleValData<int> >()->val;
 
 				if (p->id_ == 1)
 					rotUpdate.x += (rotSpeed*CONSTVAL::targetFrameTime*moveVal);
@@ -50,27 +50,49 @@ void BasicCharacter::ProcessPackets() {
 				else if (p->id_ == 4)
 					rotUpdate.y -= (rotSpeed*CONSTVAL::targetFrameTime*moveVal);
 			}
-			delete p;
-			p = nullptr;
+			//delete p;
+			//p = nullptr;
 		}		
 	}
 
 	glm::vec3 changeVec(0.0f);
 	std::vector<glm::vec3> *normalsVec;
+	std::vector<glm::vec3> sortVectors;
+	float groundVal_y;
+	bool groundValAvailable = false;
+
+	bool exist;
 	for (int i = 0; i < inputPackets.size(); ++i) {
 		p = inputPackets[i];
-		if (p != nullptr) {
+		//if (p != nullptr) {
 			if (p->class_ == 1) {
 				if (p->id_ == 0) {
 					normalsVec = &(p->GetData<CollisionData>()->normals);
-					for (int j = 0; j < normalsVec->size(); ++j)
-						changeVec += normalsVec->operator[](j);
+					for (int j = 0; j < normalsVec->size(); ++j) {
+						exist = false;
+						for (int k = 0; k < sortVectors.size(); ++k) {
+							if (sortVectors[k] == normalsVec->operator[](j)) {
+								exist = true;
+								break;
+							}
+						}
+						if (!exist) sortVectors.push_back(normalsVec->operator[](j));
+					}
+						//changeVec += normalsVec->operator[](j);
 				}
-				delete p;
-				p = nullptr;
+				else if (p->id_ == 1) {
+					groundValAvailable = true;
+					groundVal_y = p->data->GetData<SingleValData<float> >()->val;
+				}
+				//delete p;
+				//p = nullptr;
 			}
-		}
+		//}
+		delete p;
 	}
+
+	//for (int i = 0; i < sortVectors.size(); ++i)
+	//	changeVec += sortVectors[i];
 
 	//for (int i = 0; i < inputPackets.size(); ++i)
 	//	if (inputPackets[i] != nullptr) delete inputPackets[i];
@@ -108,20 +130,59 @@ void BasicCharacter::ProcessPackets() {
 
 	MoveAction(dir1, dir2);
 
-	glm::vec3 moveVec= nextPos - prevPos;;
+	glm::vec3 moveVec= nextPos - prevPos;
+	glm::vec3 basicMoveVec = moveVec;
 	float length;
-	if (changeVec != glm::vec3(0.0f) && moveVec!=glm::vec3(0.0f)) {
-		changeVec = glm::normalize(changeVec);
-		moveVec = nextPos - prevPos;
+	if (sortVectors.size()>0 && moveVec!=glm::vec3(0.0f)) {
+		//changeVec = glm::normalize(changeVec);
+		//moveVec = nextPos - prevPos;
 		length=glm::length(moveVec);
 		moveVec = glm::normalize(moveVec);
-		moveVec = moveVec + changeVec;
+		for (int i = 0; i < sortVectors.size(); ++i) {
+			moveVec += sortVectors[i];
+			//if (glm::dot(sortVectors[i], glm::vec3(0.0f, 1.0f, 0.0f)) > 0.0001f)
+			//	ifColWithObjectGround = true;
+		}
+		//moveVec = moveVec + changeVec;
 		moveVec = length * glm::normalize(moveVec);
+		//if (glm::dot(moveVec, basicMoveVec) < 0) moveVec = glm::vec3(0.0f);
+
 		nextPos = prevPos + moveVec;
 	}
-	//moveVec = nextPos - prevPos;
-	//moveVec = GetSpeed()*glm::normalize(nextPos*prevPos);
-	//nextPos = prevPos + moveVec;
+
+	bool groundObjCol = false;
+	for (int i = 0; i < sortVectors.size(); ++i) {
+		if (glm::dot(sortVectors[i], glm::vec3(0.0f, 1.0f, 0.0f)) > 0.01f) {
+			freeForceVec.y = 0.0f;
+			groundObjCol = true;
+			break;
+		}
+	}
+
+	if (groundValAvailable) {
+		if (nextPos.y-groundVal_y > CONSTVAL::deltaGroundVal) {
+			if (freeForceVec.y == 0.0f) freeForceVec.y = -((CONSTVAL::gAccelVal*CONSTVAL::targetFrameTime*CONSTVAL::targetFrameTime) / 2.0f);
+			else freeForceVec.y = -(sqrt(abs(freeForceVec.y))*CONSTVAL::fallAccelConst + (CONSTVAL::targetFrameTime / 2.0f));
+		}
+		else {
+			freeForceVec.y = 0.0f;
+			if(!groundObjCol) 
+				nextPos.y = groundVal_y;
+		}
+	}
+
+	if (!groundValAvailable && !groundObjCol) {
+		if (freeForceVec.y == 0.0f) freeForceVec.y = -((CONSTVAL::gAccelVal*CONSTVAL::targetFrameTime*CONSTVAL::targetFrameTime) / 2.0f);
+		else freeForceVec.y = -(sqrt(abs(freeForceVec.y))*CONSTVAL::fallAccelConst + (CONSTVAL::targetFrameTime / 2.0f));
+	}
+
+	//else {
+	//	if(freeForceVec.y==0.0f) freeForceVec.y = -((CONSTVAL::gAccelVal*CONSTVAL::targetFrameTime*CONSTVAL::targetFrameTime) / 2.0f);
+	//	else freeForceVec.y -= sqrt(abs(freeForceVec.y))*CONSTVAL::fallAccelConst + (CONSTVAL::targetFrameTime / 2.0f);
+	//}
+
+	nextPos += freeForceVec;
+
 	SetPosition(nextPos);
 
 	glm::quat q, qx, qy;

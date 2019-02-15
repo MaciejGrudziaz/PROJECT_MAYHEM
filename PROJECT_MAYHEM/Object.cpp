@@ -603,14 +603,14 @@ void StaticObject::UpdateHitboxes() {
 		if (mainHitbox != nullptr) {
 			for (int i = 0; i < 8; ++i) {
 				mainHitbox->transformVertices[i] = model * glm::vec4(mainHitbox->basicVertices[i], 1.0f);
-				if (i < 6) mainHitbox->transformNormals[i] = model * glm::vec4(mainHitbox->basicNormals[i], 0.0f);
+				if (i < 6) mainHitbox->transformNormals[i] = glm::normalize(model * glm::vec4(mainHitbox->basicNormals[i], 0.0f));
 			}
 		}
 
 		for (HitboxMap::iterator it = hitboxes.begin(); it != hitboxes.end(); ++it) {
 			for (int i = 0; i < 8; ++i) {
 				it->second->transformVertices[i] = model * glm::vec4(it->second->basicVertices[i], 1.0f);
-				if (i < 6) it->second->transformNormals[i] = model * glm::vec4(it->second->basicNormals[i], 0.0f);
+				if (i < 6) it->second->transformNormals[i] = glm::normalize(model * glm::vec4(it->second->basicNormals[i], 0.0f));
 			}
 		}
 	}

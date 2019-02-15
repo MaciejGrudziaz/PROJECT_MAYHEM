@@ -47,19 +47,27 @@ class:
 //------------------------------PACKETS------------------------------
 //-------------------------------------------------------------------
 
-struct MouseMoveData :public PacketData {
-	int moveVal;
+//struct MouseMoveData :public PacketData {
+//	int moveVal;
+//
+//	MouseMoveData(int moveVal_) :moveVal(moveVal_) {}
+//};
 
-	MouseMoveData(int moveVal_) :moveVal(moveVal_) {}
+template<class T>
+struct SingleValData:public PacketData{
+	T val;
+
+	SingleValData(T val_) :val(val_) {}
 };
 
 struct CollisionData : public PacketData {
 	std::vector<glm::vec3> normals;
+
+	~CollisionData() { normals.clear(); }
 };
 
-struct GroundCollision :public PacketData {
-	int mapIdx;
-	int groundObjIdx;
-
-	GroundCollision(int mapIdx_, int groundObjIdx_) :mapIdx(mapIdx_), groundObjIdx(groundObjIdx_) {}
-};
+//struct GroundCollision :public PacketData {
+//	float y;
+//
+//	GroundCollision(float mapPos_y) : y(mapPos_y){}
+//};

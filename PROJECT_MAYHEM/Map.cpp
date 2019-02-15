@@ -3,7 +3,8 @@
 bool Map::SetGroundObject(const char* name) {
 	for (int i = 0; i < GetModel()->GetObjectsCount(); ++i) {
 		if (GetModel()->GetObject_(i)->GetBasicObject()->name == name) {
-			ground.push_back(GetModel()->GetObject_(i));
+			//ground.push_back(GetModel()->GetObject_(i));
+			groundObjIdx.push_back(i);
 			return true;
 		}
 	}

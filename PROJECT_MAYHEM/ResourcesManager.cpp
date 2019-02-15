@@ -3,6 +3,7 @@
 void ResourcesManager::Init() {
 	//BasicCharacter* soldier=LoadModel<BasicCharacter>("MODELS/TEST_1_4.mgr","MODEL1");
 	Player* soldier = LoadModel<Player>("MODELS/TEST_1_4.mgr", "MODEL1");
+	AutoList<Player>::GetObj(0)->SetPosition(glm::vec3(-10.0f, 0.0f, 25.0f));
 	
 
 	//glm::vec3 pos = AutoList<BasicCharacter>::GetObj(0)->GetPosition();
@@ -84,7 +85,7 @@ T* ResourcesManager::LoadModel(const char* filename,const char* objectName) {
 
 		character->SetProjectionMatrix(WinAPIwindowManager::GetMainWindow()->GetProjectionMatrix());
 		character->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-		character->SetSpeed(10.f);
+		character->SetSpeed(20.f);
 		character->SetRotationSpeed(0.5f);
 
 		return character;

@@ -21,7 +21,8 @@ void ModulesManager::Init() {
 
 	StartFrameTimeMeasurment();
 
-	PhysicsModule::Launch();
+	PhysicsModule::LaunchCollisionDetection();
+	PhysicsModule::LaunchGroundPos();
 }
 
 void ModulesManager::Process() {
@@ -43,9 +44,10 @@ void ModulesManager::Process() {
 }
 
 void ModulesManager::End() {
+	PhysicsModule::End();
+
 	Graphics::End();
 	InputModule::End();
-	PhysicsModule::End();
 
 	ResourcesManager::Clear();
 
