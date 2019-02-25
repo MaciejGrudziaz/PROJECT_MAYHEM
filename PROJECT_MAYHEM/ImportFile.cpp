@@ -3,6 +3,7 @@
 int ImportFile::errorFlag = 0;
 std::map<int, std::vector<Hitbox*> > ImportFile::importedHitboxes;
 std::map<int,Hitbox*> ImportFile::importedMainHitboxes;
+glm::mat4 ImportFile::importedScaleMat(1.0f);
 
 int ImportFile::Import(const char* filename,BasicModel* model) {
 	importedHitboxes.clear();
@@ -16,6 +17,11 @@ int ImportFile::Import(const char* filename,BasicModel* model) {
 	//BasicModel* model = new BasicModel();
 
 	std::fstream file(filename, std::ios::in | std::ios::binary);
+
+	file.read(block, blockSize * sizeof(char));					//header
+	Mat4Struct scaleMat;
+	file.read((char*)scaleMat.mat, sizeof(Mat4Struct));
+	importedScaleMat = scaleMat.GetGLM_Mat();
 
 	do {
 		file.read(block, blockSize * sizeof(char));

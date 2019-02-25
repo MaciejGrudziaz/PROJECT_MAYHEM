@@ -20,7 +20,7 @@ void ResourcesManager::Init() {
 	AutoList<BasicCharacter>::GetObj(1)->SetPosition(glm::vec3(0.0f, 0.0f, 25.0f));
 
 	Map* map=LoadModel<Map>("MODELS/MAP_1.mgr","MAP");
-	map->Scale(10.0f, 10.0f, 10.0f);
+	//map->Scale(10.0f, 10.0f, 10.0f);
 	map->TransformObjectsVertices();
 	map->SetGroundObject("Plane");
 }
@@ -70,6 +70,7 @@ T* ResourcesManager::LoadModel(const char* filename,const char* objectName) {
 				character->LoadObjectHitboxShaderProgram(i, hitboxStatic);
 			}
 			if (strcmp(filename + (filenameStr.size() - 4), ".mgr") == 0) {
+				character->Scale(ImportFile::GetScaleMat());
 				character->GetModel()->GetObject_(i)->AddMainHitbox(ImportFile::GetMainHitbox(i));
 				if (ImportFile::ImportedHitboxesAvailableForObject(i) == true) {
 					for (int j = 0; j < ImportFile::GetHitboxCount(i); ++j) {
