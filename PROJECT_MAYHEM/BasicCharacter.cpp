@@ -160,7 +160,7 @@ void BasicCharacter::ProcessPackets() {
 	}
 
 	if (groundValAvailable) {
-		if (nextPos.y-groundVal_y > CONSTVAL::deltaGroundVal) {
+		if (nextPos.y-groundVal_y > CONSTVAL::deltaGroundVal && !groundObjCol) {
 			if (freeForceVec.y == 0.0f) freeForceVec.y = -((CONSTVAL::gAccelVal*CONSTVAL::targetFrameTime*CONSTVAL::targetFrameTime) / 2.0f);
 			else freeForceVec.y = -(sqrt(abs(freeForceVec.y))*CONSTVAL::fallAccelConst + (CONSTVAL::targetFrameTime / 2.0f));
 		}
