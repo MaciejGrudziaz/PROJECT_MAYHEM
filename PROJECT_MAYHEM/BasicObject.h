@@ -38,6 +38,8 @@ struct BasicObject {
 
 		glm::mat4 globalBindposeInverse;
 
+		glm::vec4 bindPos;
+
 		std::vector<AnimationJoint*> animations;
 
 		Joint() :parentIndex(-1) {}
