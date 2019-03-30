@@ -105,6 +105,8 @@ public:
 	const float* GetJointsPreviousTransformMatrices()const { return jointsPrevMatrices; }
 	bool GetJointsMatChangeStatus()const { return jointMatChange; }
 
+	void UpdateJointsMatrices();
+
 	//glm::mat4 GetJointPrevFrameTransformMatrix(int jointIdx);
 	//glm::mat4 GetJointNextFrameTransformMatrix(int jointIdx);
 	//glm::vec4 TransformVertexByCurrentJointMatrix(glm::vec4 vertex, int jointIdx);

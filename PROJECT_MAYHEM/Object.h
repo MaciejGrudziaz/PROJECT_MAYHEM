@@ -5,6 +5,8 @@
 #include <assert.h>
 #include <fstream>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/matrix.hpp>
 #include <stb_image.h>
 #include <map>
 #include <set>
@@ -54,6 +56,8 @@ protected:
 	void WriteErrorToFile(std::string message);
 
 	void GetSizeFromMainHitbox();
+
+	void RotateJoint(int jointIndex, glm::mat4 transform);
 
 	virtual void UpdateHitboxes() = 0;
 	virtual void SetVerticesBuffer()=0;
@@ -140,6 +144,9 @@ public:
 	void ShowMainHitbox() { showHitbox = true; showAllHitboxes = false; showHitboxIdx = -1; }
 	void HideHitboxes() { showAllHitboxes = false; showHitbox = false; }
 
+	virtual void RotateJoint(std::string jointName, float angle, glm::vec3 axis);
+	virtual void RotateJoint(int jointIndex, float angle, glm::vec3 axis);
+
 	virtual void Init() = 0;
 	virtual void Update() = 0;
 	virtual void Draw() = 0;
@@ -190,6 +197,9 @@ public:
 	void Update();
 
 	void Draw();
+
+	void RotateJoint(std::string jointName, float angle, glm::vec3 axis) { assert(false && "Can't rotate joint of static object"); }
+	void RotateJoint(int jointIndex, float angle, glm::vec3 axis) { assert(false && "Can't rotate joint of static object"); }
 
 	void SetUpdateHitboxes() { updateHitbox = true; }
 	void ResetUpdateHitbox() { updateHitbox = false; }

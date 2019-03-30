@@ -378,6 +378,23 @@ glm::vec4 AnimationManager::TransformVertexByCurrentJointMatrix(glm::vec4 vertex
 	else throw std::exception();
 }*/
 
+void AnimationManager::UpdateJointsMatrices() {
+	glm::mat4 nextMat(1.0f), prevMat(1.0f);
+
+	jointMatChange = true;
+
+	for (int i = 0; i < jointsMatricesCount; ++i) {
+		nextMat = GetAnimationsNextJointMatrix(i);
+
+		for (int j = 0; j < 4; ++j) {
+			for (int k = 0; k < 4; ++k) {
+				jointsPrevMatrices[16 * i + j * 4 + k] = jointsNextMatrices[16 * i + j * 4 + k];
+				jointsNextMatrices[16 * i + j * 4 + k] = nextMat[j][k];
+			}
+		}
+	}
+}
+
 //---------------------------------------------------------------------------------------
 //----------------------------------------PRIVATE----------------------------------------
 //---------------------------------------------------------------------------------------
@@ -438,16 +455,20 @@ void AnimationManager::SetAnimationsNextFrame() {
 }
 
 glm::mat4 AnimationManager::GetAnimationsCurrJointMatrix(unsigned jointIdx) {
-	glm::mat4 jointTransformMatrix;
+	glm::mat4 jointTransformMatrix(1.0f);
 	if (basicObject->skeleton.joints[jointIdx]->animations.size() > 0) {
 		for (unsigned i = 0; i < animations.size(); ++i) {
 			if (animations[i]->active) {
 				if (animations[i]->currentFrame < animations[i]->frameCount)
-					jointTransformMatrix = (basicObject->skeleton.joints[jointIdx]->animations[i]->frames[animations[i]->currentFrame]->globalTransform * basicObject->skeleton.joints[jointIdx]->globalBindposeInverse);// *jointTransformMatrix;
-				else jointTransformMatrix = (basicObject->skeleton.joints[jointIdx]->animations[i]->frames[0]->globalTransform * basicObject->skeleton.joints[jointIdx]->globalBindposeInverse);// *jointTransformMatrix;
+					jointTransformMatrix *= (basicObject->skeleton.joints[jointIdx]->animations[i]->frames[animations[i]->currentFrame]->globalTransform * 
+						basicObject->skeleton.joints[jointIdx]->globalBindposeInverse);// *jointTransformMatrix;
+				else jointTransformMatrix *= (basicObject->skeleton.joints[jointIdx]->animations[i]->frames[0]->globalTransform * 
+					basicObject->skeleton.joints[jointIdx]->globalBindposeInverse);// *jointTransformMatrix;
 			}
 		}
 	}
+
+	jointTransformMatrix = basicObject->skeleton.joints[jointIdx]->transform * jointTransformMatrix;
 
 	return jointTransformMatrix;
 }
@@ -511,6 +532,8 @@ glm::mat4 AnimationManager::GetAnimationsNextJointMatrix(unsigned jointIdx) {
 			}
 		}
 	}
+
+	jointTransformMatrix = basicObject->skeleton.joints[jointIdx]->transform * jointTransformMatrix;
 
 	return jointTransformMatrix;
 }

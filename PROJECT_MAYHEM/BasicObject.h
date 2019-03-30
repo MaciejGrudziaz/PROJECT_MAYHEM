@@ -40,9 +40,11 @@ struct BasicObject {
 
 		glm::vec4 bindPos;
 
+		glm::mat4 transform;
+
 		std::vector<AnimationJoint*> animations;
 
-		Joint() :parentIndex(-1) {}
+		Joint() :parentIndex(-1),transform(1.0f) {}
 
 		~Joint() {
 			for (AnimationJoint* anim : animations)

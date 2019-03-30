@@ -340,9 +340,9 @@ void DynamicObjectShaderManager::SetJointsBuffers(int jointsCount) {
 	//jointsPrevMatBufferPtr = glMapNamedBufferRange(jointsPrevMatricesBuffer,0,jointsCount*16*sizeof(float),GL_MAP_WRITE_BIT|GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
 	//jointsNextMatBufferPtr = glMapNamedBufferRange(jointsNextMatricesBuffer, 0,jointsCount*16*sizeof(float),GL_MAP_WRITE_BIT|GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
 
-	GLenum err;
-	err = glGetError();
-	assert(err == GL_NO_ERROR);
+	//GLenum err;
+	//err = glGetError();
+	//assert(err == GL_NO_ERROR);
 }
 
 //-----------------------------------------------------------------------------

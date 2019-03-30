@@ -249,6 +249,45 @@ bool Object::ShowHitbox(int idx) {
 	return false;
 }
 
+void Object::RotateJoint(std::string jointName, float angle, glm::vec3 axis) {
+	int jointIdx = -1;
+
+	for (int i = 0; basicObject->skeleton.joints.size(); ++i) {
+		if (basicObject->skeleton.joints[i]->name == jointName) {
+			jointIdx = i;
+			break;
+		}
+	}
+
+	if (jointIdx != -1) RotateJoint(jointIdx, angle, axis);
+}
+
+void Object::RotateJoint(int jointIndex, float angle, glm::vec3 axis) {
+	if (jointIndex >= 0 && jointIndex < basicObject->skeleton.joints.size()) {
+		glm::mat4 transformMat = glm::rotate(angle, axis);															//creating the transform matrix for parent joint
+		transformMat[3] = basicObject->skeleton.joints[jointIndex]->bindPos;										
+		transformMat = transformMat * glm::inverse(basicObject->globalTransform);									//transforming it to match orientation of model 
+		transformMat = (glm::inverse(basicObject->globalTransform))*transformMat*(basicObject->globalTransform);	//removing model transformation from matrix
+		transformMat = transformMat * (basicObject->skeleton.joints[jointIndex]->globalBindposeInverse);			//removing parent joint bindpose transformation
+
+		//------------------------------include of animations transforms for kinematics------------------------------
+
+		glm::mat4 animTransformMat(1.0f);
+		for (int i = 0; i < basicObject->skeleton.joints[jointIndex]->animations.size(); ++i) {
+			if (animationManager->IsActive(i)) {
+				animTransformMat *= (basicObject->skeleton.joints[jointIndex]->animations[i]->frames[animationManager->GetCurrentFrame(i)]->globalTransform *
+					basicObject->skeleton.joints[jointIndex]->globalBindposeInverse);
+			}
+		}
+
+		transformMat = animTransformMat * transformMat * glm::inverse(animTransformMat);
+
+		RotateJoint(jointIndex, transformMat);
+	}
+
+	animationManager->UpdateJointsMatrices();
+}
+
 //-----------------------------------------------------------------------------
 //-------------------------------Object::Private-------------------------------
 //-----------------------------------------------------------------------------
@@ -303,6 +342,15 @@ void Object::GetSizeFromMainHitbox() {
 		size[i] = maxVec[i] - minVec[i];
 }
 
+void Object::RotateJoint(int jointIndex, glm::mat4 transform) {
+	basicObject->skeleton.joints[jointIndex]->transform = transform;
+
+	for (int i = 0; i < basicObject->skeleton.joints.size(); ++i) {
+		if (basicObject->skeleton.joints[i]->parentIndex == jointIndex)
+			RotateJoint(i, transform);
+	}
+}
+
 //-----------------------------------------------------------------------------
 //--------------------------------DynamicObject--------------------------------
 //-----------------------------------------------------------------------------
@@ -336,6 +384,8 @@ void DynamicObject::Init() {
 
 void DynamicObject::Update() {
 	animationManager->Process();
+
+	RotateJoint("upper_arm.R.001", 3.1415f / 2.0f, glm::vec3(0.0f, 0.0f, 1.0f));
 
 	//if (modelUpdate || viewUpdate || projectionUpdate) {
 		//if (modelUpdate)
