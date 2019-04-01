@@ -319,19 +319,19 @@ void DynamicObjectShaderManager::SetJointsBuffers(int jointsCount) {
 	glUseProgram(shaderProgram->GetProgram());
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, jointsPrevMatricesBuffer);
-	//glBufferStorage(GL_SHADER_STORAGE_BUFFER, jointsCount * 16 * sizeof(float), NULL, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, jointsCount * 16 * sizeof(float), NULL, GL_DYNAMIC_DRAW);
+	glBufferStorage(GL_SHADER_STORAGE_BUFFER, jointsCount * 16 * sizeof(float), NULL, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+	//glBufferData(GL_SHADER_STORAGE_BUFFER, jointsCount * 16 * sizeof(float), NULL, GL_DYNAMIC_DRAW);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, jointsNextMatricesBuffer);
-	//glBufferStorage(GL_SHADER_STORAGE_BUFFER, jointsCount * 16 * sizeof(float), NULL, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, jointsCount * 16 * sizeof(float), NULL, GL_DYNAMIC_DRAW);
+	glBufferStorage(GL_SHADER_STORAGE_BUFFER, jointsCount * 16 * sizeof(float), NULL, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+	//glBufferData(GL_SHADER_STORAGE_BUFFER, jointsCount * 16 * sizeof(float), NULL, GL_DYNAMIC_DRAW);
 
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, jointsPrevMatricesBuffer);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, jointsNextMatricesBuffer);
 
-	//GLsync sync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-	//GLint result;
-	//do { glGetSynciv(sync, GL_SYNC_STATUS, sizeof(GLint), NULL, &result); } while (result != GL_SIGNALED);
+	GLsync sync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+	GLint result;
+	do { glGetSynciv(sync, GL_SYNC_STATUS, sizeof(GLint), NULL, &result); } while (result != GL_SIGNALED);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, jointsPrevMatricesBuffer);
 	jointsPrevMatBufferPtr = glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, jointsCount * 16 * sizeof(float), GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
@@ -340,9 +340,9 @@ void DynamicObjectShaderManager::SetJointsBuffers(int jointsCount) {
 	//jointsPrevMatBufferPtr = glMapNamedBufferRange(jointsPrevMatricesBuffer,0,jointsCount*16*sizeof(float),GL_MAP_WRITE_BIT|GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
 	//jointsNextMatBufferPtr = glMapNamedBufferRange(jointsNextMatricesBuffer, 0,jointsCount*16*sizeof(float),GL_MAP_WRITE_BIT|GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
 
-	//GLenum err;
-	//err = glGetError();
-	//assert(err == GL_NO_ERROR);
+	GLenum err;
+	err = glGetError();
+	assert(err == GL_NO_ERROR);
 }
 
 //-----------------------------------------------------------------------------

@@ -9,6 +9,9 @@ void ModulesManager::Init() {
 	logFlag |= 0x01;
 
 	Graphics::Init();
+
+	const GLubyte* ver = glGetString(GL_VERSION);
+
 	InputModule::Init();
 
 	ResourcesManager::Init();
