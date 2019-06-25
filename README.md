@@ -1,4 +1,4 @@
-# PROJECT_MAYHEM
+# PROJECT MAYHEM
 Basic 3D game engine API, without graphical interface, built in C++, with OpenGL for advanced graphics and WinAPI for window management.
 
 Aim of this project was to move from the [first version of the engine](https://github.com/MaciejGrudziaz/ARENA.git) to more advanced one, with better graphics display, using OpenGL shaders and animated models.
