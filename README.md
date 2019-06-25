@@ -10,7 +10,7 @@ Specially for this project, a special character editor was created [ [MaciejGrud
 The engine has also built-in collision detection functions, using GJK algorithm and basic physics interactions.
 
 **Previous version:**
-- **Project Arena (1.0)** [ (MaciejGrudziaz/ARENA.git)[https://github.com/MaciejGrudziaz/ARENA.git] ]
+- **Project Arena (1.0)** [ [MaciejGrudziaz/ARENA.git](https://github.com/MaciejGrudziaz/ARENA.git) ]
 
 **New version:**
-- **Project Aperta (3.0)** [ (MaciejGrudziaz/PROJECT_APERTA.git)[https://github.com/MaciejGrudziaz/PROJECT_APERTA.git] ]
+- **Project Aperta (3.0)** [ [MaciejGrudziaz/PROJECT_APERTA.git](https://github.com/MaciejGrudziaz/PROJECT_APERTA.git) ]
