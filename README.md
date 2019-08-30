@@ -14,6 +14,7 @@ The engine has also built-in collision detection functions, using GJK algorithm 
 
 **New version:**
 - **Project Aperta (3.0)** [ [MaciejGrudziaz/PROJECT_APERTA.git](https://github.com/MaciejGrudziaz/PROJECT_APERTA.git) ]
+- **Project Spring (4.0)** [ [MaciejGrudziaz/PROJECT_SPRING.git](https://github.com/MaciejGrudziaz/PROJECT_SPRING.git) ]
 
 ## GALLERY
 ![screenshot of the project](https://github.com/MaciejGrudziaz/PROJECT_MAYHEM/blob/master/Screenshots/mayhem_screenshot_1.PNG)
