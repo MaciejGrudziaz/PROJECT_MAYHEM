@@ -12,7 +12,7 @@ The engine has also built-in collision detection functions, using GJK algorithm 
 **Previous version:**
 - **Project Arena (1.0)** [ [MaciejGrudziaz/ARENA.git](https://github.com/MaciejGrudziaz/ARENA.git) ]
 
-**New version:**
+**New versions:**
 - **Project Aperta (3.0)** [ [MaciejGrudziaz/PROJECT_APERTA.git](https://github.com/MaciejGrudziaz/PROJECT_APERTA.git) ]
 - **Project Spring (4.0)** [ [MaciejGrudziaz/PROJECT_SPRING.git](https://github.com/MaciejGrudziaz/PROJECT_SPRING.git) ]
 
